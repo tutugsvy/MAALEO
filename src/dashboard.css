@@ -160,6 +160,40 @@ body { margin: 0; background: var(--bg); color: var(--txt); font-family: var(--s
 .hero-viz-label { text-align: center; font-family: var(--mono); font-size: 10px; letter-spacing: 0.22em; color: var(--dim); margin-top: 14px; }
 .hero-viz-dot { color: var(--green); }
 
+/* ── dividend pool visual ── */
+.pv { position: relative; height: 300px; display: flex; align-items: center; justify-content: center; }
+.pv-glow {
+  position: absolute; inset: 8%;
+  background: radial-gradient(340px 260px at 50% 50%, rgba(255, 176, 32, 0.16), transparent 70%);
+  animation: pv-breathe 5s ease-in-out infinite;
+}
+@keyframes pv-breathe { 0%,100% { opacity: .6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.04); } }
+.pv-rings { position: relative; width: 220px; height: 220px; }
+.pv-ring { position: absolute; border-radius: 50%; }
+.pv-ring--out { inset: 0; border: 1px dashed rgba(140, 170, 220, 0.35); animation: pv-spin 22s linear infinite; }
+.pv-ring--mid { inset: 24px; border: 1px solid rgba(56, 189, 248, 0.35); animation: pv-spin 14s linear infinite reverse; }
+.pv-ring--in { inset: 48px; border: 1px solid rgba(255, 176, 32, 0.45); animation: pv-spin 9s linear infinite; }
+@keyframes pv-spin { to { transform: rotate(360deg); } }
+.pv-core {
+  position: absolute; inset: 58px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(255, 210, 87, 0.22), rgba(13, 19, 36, 0.9) 65%);
+  border: 1px solid rgba(255, 176, 32, 0.35);
+  box-shadow: 0 0 34px rgba(255, 176, 32, 0.2), inset 0 0 22px rgba(56, 189, 248, 0.08);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+}
+.pv-core-t { font-family: var(--mono); font-size: 15px; font-weight: 800; letter-spacing: 0.2em; color: var(--gold2); }
+.pv-core-s { font-family: var(--mono); font-size: 8px; letter-spacing: 0.18em; color: var(--dim); }
+.pv-chip {
+  position: absolute; font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em;
+  padding: 4px 9px; border-radius: 14px; white-space: nowrap;
+}
+.pv-chip--in1 { top: 8%; left: 4%; color: var(--gold2); border: 1px solid rgba(255, 176, 32, 0.4); background: rgba(255, 176, 32, 0.07); animation: pv-float 4s ease-in-out infinite; }
+.pv-chip--in2 { top: 22%; right: 2%; color: var(--cyan); border: 1px solid rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.07); animation: pv-float 4.4s ease-in-out infinite reverse; }
+.pv-chip--out1 { bottom: 10%; left: 6%; color: var(--green); border: 1px solid rgba(61, 220, 132, 0.4); background: rgba(61, 220, 132, 0.07); animation: pv-float 4.8s ease-in-out infinite; }
+.pv-chip--out2 { bottom: 2%; right: 12%; color: var(--green); border: 1px solid rgba(61, 220, 132, 0.4); background: rgba(61, 220, 132, 0.07); animation: pv-float 5.2s ease-in-out infinite reverse; }
+.pv-chip--out3 { bottom: 24%; left: 22%; color: var(--green); border: 1px solid rgba(61, 220, 132, 0.4); background: rgba(61, 220, 132, 0.07); animation: pv-float 5.6s ease-in-out infinite; }
+@keyframes pv-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+
 /* ── errors ── */
 .app-err {
   margin: 0 clamp(16px, 4vw, 48px) 18px; padding: 10px 14px;

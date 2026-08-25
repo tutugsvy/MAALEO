@@ -6,10 +6,10 @@ import './dashboard.css';
 import logoUrl from './assets/logo-v2.jpg';
 import { TOKEN, TARGET_CHAIN_ID, NETWORK_NAME } from './game/config.js';
 import { hasInjectedWallet, connectInjected, onAccountsChanged, onChainChanged } from './game/wallet.js';
-import HeroRig from './components/HeroRig.jsx';
 import TickerTape from './components/TickerTape.jsx';
 import DividendPool from './components/DividendPool.jsx';
 import HowItWorks from './components/HowItWorks.jsx';
+import PoolVisual from './components/PoolVisual.jsx';
 
 const SHORT = a => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : null);
 
@@ -81,7 +81,7 @@ export default function App() {
         <div className="hero-copy">
           <div className="hero-kicker">
             <span className="hero-live">● HOLD TO EARN</span>
-            <span>GPU MINING · ROBINHOOD CHAIN</span>
+            <span>ROBINHOOD CHAIN · 4663</span>
           </div>
           <h1 className="hero-title">
             HOLD<span className="hero-dim">.</span> MINE<span className="hero-dim">.</span><br />
@@ -108,9 +108,9 @@ export default function App() {
         </div>
 
         <div className="hero-visual">
-          <HeroRig />
+          <PoolVisual />
           <div className="hero-viz-label">
-            <span className="hero-viz-dot" /> 7 RIGS · 21 GPUs · 54 FANS
+            <span className="hero-viz-dot" /> FEES IN · REWARDS OUT
           </div>
         </div>
       </main>
