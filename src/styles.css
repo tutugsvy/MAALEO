@@ -36,7 +36,7 @@ body {
 /* ── Background layers ────────────────────────────────────────────────────── */
 .bg-layer {
   position: fixed; inset: 0; z-index: -1;
-  background: url('/assets/bg-shaft.jpg') center center / cover no-repeat;
+  background: url('./assets/bg-shaft.jpg') center center / cover no-repeat;
   opacity: 0.35;
   filter: saturate(0.6) brightness(0.5);
 }
@@ -67,11 +67,19 @@ body {
   position: sticky; top: 0; z-index: 100;
   flex-wrap: wrap;
 }
-.hud-brand { display: flex; align-items: center; gap: 10px; }
-.hud-logo { width: 36px; height: 36px; }
+.hud-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.hud-logo {
+  width: 44px; height: 44px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,210,87,0.25);
+  box-shadow: 0 0 12px rgba(255,210,87,0.15);
+  background: #0c0e12;
+  padding: 2px;
+  object-fit: contain;
+}
 .hud-title { font-weight: 800; font-size: 18px; letter-spacing: 1px; color: var(--accent); }
 .hud-tag { font-size: 10px; color: var(--muted); font-family: var(--mono); text-transform: uppercase; letter-spacing: 2px; }
-.hud-stats { display: flex; gap: 14px; flex: 1; }
+.hud-stats { display: flex; gap: 14px; flex: 1; flex-wrap: wrap; }
 .hud-stat { display: flex; flex-direction: column; }
 .hud-stat-label { font-size: 9px; color: var(--muted); font-family: var(--mono); text-transform: uppercase; letter-spacing: 1px; }
 .hud-stat-value { font-size: 16px; font-weight: 700; font-family: var(--mono); }
@@ -82,7 +90,7 @@ body {
 .mkt-price { font-size: 13px; font-weight: 700; font-family: var(--mono); }
 .mkt-up { color: var(--green); font-size: 10px; }
 .mkt-down { color: var(--red); font-size: 10px; }
-.hud-actions { display: flex; gap: 6px; }
+.hud-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
 
 /* ── wallet ──────────────────────────────────────────────────────────────── */
 .wallet-dot {
@@ -282,6 +290,15 @@ code {
 .rules-list li { counter-increment: step; padding: 8px 0; padding-left: 32px; position: relative; font-size: 13px; line-height: 1.5; border-bottom: 1px solid var(--line); }
 .rules-list li:last-child { border: none; }
 .rules-list li::before { content: counter(step); position: absolute; left: 0; top: 8px; width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--line2); display: flex; align-items: center; justify-content: center; font-size: 11px; font-family: var(--mono); color: var(--muted); }
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .main { flex-direction: column; padding: 12px; }
+  .main-right { width: 100%; }
+  .hud { padding: 8px 12px; gap: 8px; }
+  .hud-stats { gap: 10px; }
+  .shift-list { flex-direction: column; }
+}
 
 /* ── Toast ────────────────────────────────────────────────────────────────── */
 .toast {

@@ -54,13 +54,13 @@ export default function Floor({ state, selectedId, onSelect }) {
       ctx.fillStyle = 'rgba(139,149,165,0.5)';
       ctx.fillText('SHARED RATE — MORE BUYERS, MORE SPLIT', 14, H - 12);
 
-      // ── GPUs ──
+      // ── GPUs (big, animated) ──
       const spacing = W / (Math.max(state.gpus.length, 1) + 1);
       state.gpus.forEach((g, i) => {
         const x = spacing * (i + 1);
         const y = H * 0.58;
         const sel = g.id === selectedId || g.id === hoverId;
-        drawGPU(ctx, g, x, y, 1.0, t, {
+        drawGPU(ctx, g, x, y, 1.5, t, {
           selected: sel,
           mining: true,
           hashRate: rate,
@@ -69,20 +69,20 @@ export default function Floor({ state, selectedId, onSelect }) {
 
       // empty slot hint
       if (state.gpus.length === 0) {
-        ctx.setLineDash([5, 5]);
+        ctx.setLineDash([6, 6]);
         ctx.strokeStyle = 'rgba(255,210,87,0.5)';
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.rect(W / 2 - 90, H * 0.58 - 50, 180, 84);
+        ctx.rect(W / 2 - 130, H * 0.58 - 70, 260, 118);
         ctx.stroke();
         ctx.setLineDash([]);
-        ctx.fillStyle = 'rgba(255,210,87,0.8)';
-        ctx.font = "bold 13px 'JetBrains Mono', monospace";
+        ctx.fillStyle = 'rgba(255,210,87,0.85)';
+        ctx.font = "bold 16px 'JetBrains Mono', monospace";
         ctx.textAlign = 'center';
-        ctx.fillText('NO GPU YET', W / 2, H * 0.58 + 52);
+        ctx.fillText('NO GPU YET', W / 2, H * 0.58 + 66);
         ctx.fillStyle = 'rgba(255,210,87,0.5)';
-        ctx.font = "10px 'JetBrains Mono', monospace";
-        ctx.fillText('connect wallet → buy a GPU', W / 2, H * 0.58 + 68);
+        ctx.font = "12px 'JetBrains Mono', monospace";
+        ctx.fillText('connect wallet → buy a GPU', W / 2, H * 0.58 + 86);
       }
 
       animRef.current = requestAnimationFrame(draw);
@@ -111,7 +111,7 @@ export default function Floor({ state, selectedId, onSelect }) {
       <canvas
         ref={canvasRef}
         width={960}
-        height={340}
+        height={400}
         className="floor-canvas"
         onClick={handleClick}
         onMouseMove={e => {

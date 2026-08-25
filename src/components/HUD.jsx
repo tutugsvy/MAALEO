@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { TOKEN, PAY_TOKEN, TREASURY } from '../game/config.js';
 import { perGpuPerHour } from '../game/state.js';
 import { getChainInfo, hasInjectedWallet } from '../game/wallet.js';
+import logoUrl from '../assets/logo-v2.jpg';
 
 export default function HUD({ state, onAction }) {
   const [now, setNow] = useState(Date.now());
@@ -19,7 +20,7 @@ export default function HUD({ state, onAction }) {
   return (
     <header className="hud">
       <div className="hud-brand">
-        <img src="/assets/logo-v2.jpg" alt="PONSMINER" className="hud-logo" />
+        <img src={logoUrl} alt="PONSMINER" className="hud-logo" />
         <div>
           <div className="hud-title">PONSMINER</div>
           <div className="hud-tag">gpu mining · robinhood chain</div>

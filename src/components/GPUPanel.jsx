@@ -23,11 +23,15 @@ export default function GPUPanel({ gpu, state, onAction }) {
       </div>
 
       <div className="bind-row">
-        <button className="btn btn-gold" disabled={!canBuy} onClick={() => onAction('buy-gpu')}>
+        <button className="btn btn-gold" disabled={!canBuy || !state.wallet} onClick={() => onAction('buy-gpu')}>
           BUY GPU · {GPU_COST.toLocaleString()} {PAY_TOKEN.symbol}
         </button>
-        {!canBuy && state.pay < GPU_COST && (
+        {!state.wallet ? (
+          <p className="muted small" style={{ marginTop: 6 }}>⚡ Connect wallet dulu untuk beli GPU</p>
+        ) : !canBuy && state.pay < GPU_COST ? (
           <p className="muted small" style={{ marginTop: 6 }}>Not enough {PAY_TOKEN.symbol} balance</p>
+        ) : !canBuy && (
+          <p className="muted small" style={{ marginTop: 6 }}>Max {MAX_GPU_PER_WALLET} GPU per wallet</p>
         )}
       </div>
 
