@@ -47,6 +47,17 @@ export default function ComingSoon() {
           <span className="chain-pill">PAY → TREASURY</span>
           <span className="chain-pill">FIXED EMISSION</span>
         </div>
+        <div className="landing-token">
+          <span className="token-pill">
+            <span className="token-dot" /> PONS
+          </span>
+          <a className="token-ca"
+             href="https://robinhoodchain.blockscout.com/token/0x39dBED3a2bd333467115dE45665cC57F813C4571"
+             target="_blank"
+             rel="noopener noreferrer">
+            0x39dBED3a2bd33…4571
+          </a>
+        </div>
       </div>
 
       {/* 3D-modeled mining rigs on the horizon */}

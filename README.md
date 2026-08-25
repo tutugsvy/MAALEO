@@ -222,7 +222,7 @@ PAY token → Buy GPU (500,000 PAY) → TREASURY address
 | Token | Role | Address |
 |---|---|---|
 | PAY | Purchase GPU | *Placeholder — set in `config.js`* |
-| PONS | Mining reward | *Emission token* |
+| PONS | Mining reward | [`0x39dBED3a2bd333467115dE45665cC57F813C4571`](https://robinhoodchain.blockscout.com/token/0x39dBED3a2bd333467115dE45665cC57F813C4571) — live on Robinhood Chain ✓ |
 | TREASURY | Payment receiver | *Placeholder — set in `config.js`* |
 
 ---

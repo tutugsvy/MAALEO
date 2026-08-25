@@ -678,6 +678,42 @@ code {
   letter-spacing: 1px;
 }
 
+/* reward token address */
+.landing-token {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 2px;
+}
+.token-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--pixel);
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: #ffd98a;
+  border: 1px solid rgba(255,194,74,0.4);
+  background: rgba(255,194,74,0.08);
+  padding: 5px 10px;
+}
+.token-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #3ddc84;
+  box-shadow: 0 0 8px #3ddc84;
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}
+.token-ca {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  border-bottom: 1px dashed rgba(132,148,171,0.4);
+  text-decoration: none;
+  padding-bottom: 1px;
+  transition: color 0.2s, border-color 0.2s;
+}
+.token-ca:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
 /* ── 3D-modeled mining rigs ── */
 .landing-rigs {
   position: absolute; bottom: 0; left: 0; right: 0;
