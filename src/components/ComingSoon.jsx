@@ -1,7 +1,24 @@
-// ─── PONSMINER · Coming Soon — silhouette landing ─────────────────────────
-// Dark navy scene, GPU mining rigs as glowing silhouettes on the horizon,
-// particles, "OPEN SOON" hero. No fake signup — honest teaser.
+// ─── PONSMINER · Coming Soon — 3D-modeled GPU landing ─────────────────────
+// Dark navy scene, mining rigs with 3D-modeled GPU cards (beveled shroud,
+// backplate, depth faces, 3D fans w/ hubs), LED glow, particles.
+// No fake signup — honest teaser.
 import logoUrl from '../assets/logo-v2.jpg';
+
+// 9 curved blades — lighter leading edge, darker trailing → reads 3D
+const BLADES = 9;
+function bladeGradient() {
+  const stops = [];
+  const span = 360 / BLADES;
+  for (let i = 0; i < BLADES; i++) {
+    const a = i * span;
+    stops.push(`rgba(140,162,198,0) ${a}deg`);
+    stops.push(`rgba(172,194,228,0.72) ${a + 5}deg`);
+    stops.push(`rgba(172,194,228,0.32) ${a + 20}deg`);
+    stops.push(`rgba(140,162,198,0) ${a + span - 5}deg`);
+  }
+  return `conic-gradient(from -30deg, ${stops.join(',')})`;
+}
+const BLADE_BG = bladeGradient();
 
 export default function ComingSoon() {
   return (
@@ -32,15 +49,15 @@ export default function ComingSoon() {
         </div>
       </div>
 
-      {/* silhouette mining rigs on the horizon */}
+      {/* 3D-modeled mining rigs on the horizon */}
       <div className="landing-rigs">
+        <Rig fans={3} tall l />
+        <Rig fans={2} r />
         <Rig fans={3} tall />
-        <Rig fans={2} />
-        <Rig fans={3} tall />
-        <Rig fans={2} mid />
-        <Rig fans={3} />
+        <Rig fans={2} l mid />
+        <Rig fans={3} r />
         <Rig fans={2} tall />
-        <Rig fans={3} mid />
+        <Rig fans={3} l mid />
       </div>
 
       <footer className="landing-foot">
@@ -50,27 +67,28 @@ export default function ComingSoon() {
   );
 }
 
-function Rig({ fans, tall, mid }) {
+function Rig({ fans, tall, mid, l, r }) {
   return (
-    <div className={`rig ${tall ? 'rig-tall' : ''} ${mid ? 'rig-mid' : ''}`}>
-      <div className="rig-stand">
-        {/* GPU cards stacked in the rack — silhouette w/ glowing LED */}
+    <div className={`rig ${l ? 'rig-l' : ''} ${r ? 'rig-r' : ''} ${tall ? 'rig-tall' : ''} ${mid ? 'rig-mid' : ''}`}>
+      <div className="rig-frame">
+        {/* GPU cards stacked in the open aluminum rack */}
         {[0, 1, 2].map(row => (
-          <div className="rig-shelf" key={row}>
-            <div className="rig-card">
-              <span className="rig-led" />
-              <div className="rig-fans">
-                {Array.from({ length: fans }).map((_, i) => (
-                  <div className="rig-fan" key={i}>
-                    <div className="rig-fan-blades" />
-                  </div>
-                ))}
-              </div>
+          <div className="lg-card" key={row}>
+            <span className="lg-led" />
+            <div className="lg-fans">
+              {Array.from({ length: fans }).map((_, i) => (
+                <div className="lg-fan" key={i}>
+                  <div className="lg-blades" style={{ background: BLADE_BG }} />
+                  <div className="lg-hub" />
+                </div>
+              ))}
             </div>
+            <span className="lg-bracket" />
           </div>
         ))}
-        <div className="rig-pedestal" />
+        <div className="rig-psu" />
       </div>
+      <div className="rig-feet" />
     </div>
   );
 }
