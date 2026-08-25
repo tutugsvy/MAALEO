@@ -129,8 +129,7 @@ export default function App() {
       {/* ── footer ── */}
       <footer className="ft">
         <p className="ft-note">
-          {TOKEN.symbol} launched on the chain's launchpad. Tokenized stock is not open to US persons.
-          Not financial advice — this is a game, not a promise of return.
+          {TOKEN.symbol} launched on ponsfamily.
         </p>
         <p className="ft-brand">PONSMINER · HOLD TO EARN · ROBINHOOD CHAIN {TARGET_CHAIN_ID}</p>
       </footer>
