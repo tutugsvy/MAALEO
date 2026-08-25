@@ -1,13 +1,13 @@
 // ─── PONSMINER v2 · App — hold-to-earn fee-sharing dashboard ───────────────
 // Hold PONSMINER → ponsfamily launchpad shares 100% creator fees to holders,
-// pro-rata, automatically. Real wallet connect + real on-chain share read.
+// pro-rata, automatically. Wallet connect shows YOUR real share of the pool.
 import { useEffect, useState } from 'react';
 import './dashboard.css';
 import logoUrl from './assets/logo-v2.jpg';
 import { TOKEN, TARGET_CHAIN_ID, NETWORK_NAME } from './game/config.js';
 import { hasInjectedWallet, connectInjected, onAccountsChanged, onChainChanged } from './game/wallet.js';
 import TickerTape from './components/TickerTape.jsx';
-import DividendPool from './components/DividendPool.jsx';
+import FeeShare from './components/FeeShare.jsx';
 import HowItWorks from './components/HowItWorks.jsx';
 import PoolVisual from './components/PoolVisual.jsx';
 
@@ -15,17 +15,12 @@ const SHORT = a => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : null);
 
 export default function App() {
   const [account, setAccount] = useState(null);
-  const [chainId, setChainId] = useState(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState(null);
-  const [provider, setProvider] = useState(null);
 
   useEffect(() => {
     const offAcc = onAccountsChanged(a => { setAccount(a); setErr(null); });
-    const offChain = onChainChanged(id => {
-      setChainId(id ? parseInt(id, 16) : null);
-      setErr(null);
-    });
+    const offChain = onChainChanged(() => { setErr(null); });
     return () => { offAcc(); offChain(); };
   }, []);
 
@@ -36,8 +31,6 @@ export default function App() {
     try {
       const addr = await connectInjected();
       setAccount(addr);
-      setProvider(window.ethereum);
-      setChainId(addr ? TARGET_CHAIN_ID : null);
     } catch (e) {
       setErr((e && e.message) || 'Wallet request failed');
     } finally {
@@ -45,10 +38,7 @@ export default function App() {
     }
   };
 
-  const wrongChain = chainId && chainId !== TARGET_CHAIN_ID;
-  const caShort = TOKEN.contractAddress
-    ? `${TOKEN.contractAddress.slice(0, 6)}…${TOKEN.contractAddress.slice(-4)}`
-    : null;
+  const caShort = TOKEN.contractAddress ? SHORT(TOKEN.contractAddress) : null;
 
   return (
     <div className="app">
@@ -66,7 +56,7 @@ export default function App() {
           </span>
           {account ? (
             <button className="hd-wallet connected" onClick={() => setAccount(null)}>
-              {wrongChain ? `⚠ switch to ${TARGET_CHAIN_ID}` : SHORT(account)}
+              {SHORT(account)}
             </button>
           ) : (
             <button className="hd-wallet" onClick={connect} disabled={busy}>
@@ -99,10 +89,8 @@ export default function App() {
           </div>
           <div className="hero-token">
             <span className="hero-token-pill"><span className="hero-token-dot" /> {TOKEN.symbol}</span>
-            {caShort ? (
+            {caShort && (
               <a className="hero-token-ca" href={TOKEN.launchpadUrl} target="_blank" rel="noopener noreferrer">{caShort} ↗</a>
-            ) : (
-              <a className="hero-token-ca" href={TOKEN.launchpadUrl} target="_blank" rel="noopener noreferrer">launch on ponsfamily ↗</a>
             )}
           </div>
         </div>
@@ -116,12 +104,9 @@ export default function App() {
       </main>
 
       {err && <div className="app-err">{err}</div>}
-      {wrongChain && (
-        <div className="app-err">Switch wallet to {NETWORK_NAME} (chain {TARGET_CHAIN_ID}) — dividends live there.</div>
-      )}
 
-      {/* ── pool / claim ── */}
-      <DividendPool account={account} provider={provider} />
+      {/* ── fee sharing ── */}
+      <FeeShare account={account} />
 
       {/* ── how it works ── */}
       <HowItWorks />
