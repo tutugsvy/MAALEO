@@ -16,17 +16,17 @@ export const TOKEN = {
 
 // Payment token details — NOT deployed yet; game runs on play PAY for now.
 export const PAY_TOKEN = {
-  symbol: 'PAY',                // ← ganti jadi simbol token yang lo deploy nanti
+  symbol: 'PAY',                // ← change to your deployed token symbol
   name: 'Payment Token',
   decimals: 18,
-  contractAddress: null,        // ← isi CA token setelah deploy
+  contractAddress: null,        // ← fill after token deploy
 };
 
 // Treasury address — collects all GPU purchase payments
-export const TREASURY = '0x0000000000000000000000000000000000000000'; // ← isi address penampung
+export const TREASURY = '0x0000000000000000000000000000000000000000'; // ← fill with treasury address
 
-// ─── STOCK TICKERS (dividen pool — tokenized stock RH) ────────────────────
-// Ticker tape di dashboard. Harga diambil live saat claim/lihat (via Chainlink).
+// ─── STOCK TICKERS (dividend pool — tokenized stock on RH) ────────────────
+// Dashboard ticker tape. Live prices via Chainlink once P1 reads are wired.
 export const STOCK_TICKERS = [
   { symbol: 'NVDA',  token: '0xd0601ce157db5bdc3162bbac2a2c8af5320d9eec' },
   { symbol: 'COIN',  token: '0x6330d8c3178a418788df01a47479c0ce7ccf450b' },
@@ -36,11 +36,11 @@ export const STOCK_TICKERS = [
   { symbol: 'SPCX',  token: '0x4a0e65a3eccec6dbe60ae065f2e7bb85fae35eea' },
 ];
 
-// Status P1 (RewardDistributor). "soon" = contract belum deploy.
+// Dividend pool (P1). Fill poolContract after RewardDistributor deploys.
 export const DIVIDEND_STATUS = {
-  poolContract: null,        // ← isi address RewardDistributor setelah deploy
-  poolPons: 0,               // PONS di pool (live setelah contract jalan)
-  poolStocks: [],            // [{symbol, amount}] stock di pool
+  poolContract: null,        // ← fill with RewardDistributor address after deploy
+  poolPons: 0,               // PONS in pool (read live from contract once deployed)
+  poolStocks: [],            // [{symbol, amount}] stock in pool
 };
 export const TARGET_CHAIN_ID = 4663;         // Robinhood Chain
 export const NETWORK_NAME = 'Robinhood Chain';

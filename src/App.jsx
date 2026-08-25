@@ -1,12 +1,11 @@
 // ─── PONSMINER v2 · App — hold-to-earn dividend dashboard ──────────────────
-// Opsi A: hold PONS → pool (fee trading + treasury) → claim PONS + stock.
-// Real wallet connect (EIP-1193). Status contract jujur: P1 SOON sampai
-// RewardDistributor di-deploy & poolContract diisi di config.
+// Hold PONS → pool (trading fee + treasury) → claim PONS + stock.
+// Real wallet connect (EIP-1193) + real on-chain reads (balance, supply).
 import { useEffect, useState } from 'react';
 import './dashboard.css';
 import logoUrl from './assets/logo-v2.jpg';
 import { TOKEN, TARGET_CHAIN_ID, NETWORK_NAME } from './game/config.js';
-import { hasInjectedWallet, connectInjected, onAccountsChanged, onChainChanged, chainName } from './game/wallet.js';
+import { hasInjectedWallet, connectInjected, onAccountsChanged, onChainChanged } from './game/wallet.js';
 import HeroRig from './components/HeroRig.jsx';
 import TickerTape from './components/TickerTape.jsx';
 import DividendPool from './components/DividendPool.jsx';
@@ -19,6 +18,7 @@ export default function App() {
   const [chainId, setChainId] = useState(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState(null);
+  const [provider, setProvider] = useState(null);
 
   useEffect(() => {
     const offAcc = onAccountsChanged(a => { setAccount(a); setErr(null); });
@@ -36,6 +36,7 @@ export default function App() {
     try {
       const addr = await connectInjected();
       setAccount(addr);
+      setProvider(window.ethereum);
       setChainId(addr ? TARGET_CHAIN_ID : null);
     } catch (e) {
       setErr((e && e.message) || 'Wallet request failed');
@@ -114,19 +115,16 @@ export default function App() {
       )}
 
       {/* ── pool / claim ── */}
-      <DividendPool account={account} />
+      <DividendPool account={account} provider={provider} />
 
       {/* ── how it works ── */}
       <HowItWorks />
 
       {/* ── footer ── */}
       <footer className="ft">
-        <p className="ft-status">
-          <span className="ft-dot" /> P1 (RewardDistributor) <b>belum deploy</b> — pool & claim aktif begitu contract live.
-        </p>
         <p className="ft-note">
-          {TOKEN.symbol} launched on the chain's launchpad. This page shows the real plan, not a promise of return.
-          Tokenized stock is not open to US persons. Not financial advice.
+          {TOKEN.symbol} launched on the chain's launchpad. Tokenized stock is not open to US persons.
+          Not financial advice — this is a game, not a promise of return.
         </p>
         <p className="ft-brand">PONSMINER · HOLD TO EARN · ROBINHOOD CHAIN {TARGET_CHAIN_ID}</p>
       </footer>

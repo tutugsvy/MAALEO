@@ -207,6 +207,10 @@ body { margin: 0; background: var(--bg); color: var(--txt); font-family: var(--s
   box-shadow: none;
 }
 .pool-hint { font-size: 12px; color: var(--dim); max-width: 62ch; line-height: 1.55; }
+.pool-result { font-family: var(--mono); font-size: 12px; margin: 0; max-width: 62ch; line-height: 1.5; }
+.pool-result.ok { color: var(--green); }
+.pool-result.ok a { color: var(--green); text-decoration: underline; }
+.pool-result.err { color: var(--red); }
 
 /* ── how it works ── */
 .how { padding: clamp(20px, 4vw, 50px) clamp(16px, 4vw, 48px) 40px; max-width: 1180px; margin: 0 auto; }
