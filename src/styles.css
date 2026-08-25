@@ -172,15 +172,231 @@ code {
 .panel-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 .panel-title-row h2 { margin-bottom: 0; }
 
-/* ── Floor canvas ─────────────────────────────────────────────────────────── */
-.floor-wrap {
-  background: rgba(0,0,0,0.5);
+/* ── Floor (DOM-based GPU cards — CSS 3D + conic-gradient fans) ────────── */
+.floor {
+  background: rgba(0,0,0,0.55);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  overflow: hidden;
-  cursor: pointer;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 120px;
 }
-.floor-canvas { width: 100%; height: auto; display: block; }
+.floor-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.floor-title {
+  font-size: 10px; font-family: var(--mono); text-transform: uppercase;
+  color: var(--muted); letter-spacing: 2px;
+}
+.floor-live {
+  font-size: 9px; font-family: var(--mono);
+  color: var(--green); display: flex; align-items: center; gap: 4px;
+}
+.live-dot {
+  display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green); box-shadow: 0 0 6px var(--green);
+  animation: pulse-dot 1.2s ease-in-out infinite;
+}
+@keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+.floor-empty {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 8px; padding: 40px 20px;
+  border: 1px dashed var(--line2); border-radius: 10px;
+}
+.floor-empty-icon { font-size: 36px; color: var(--accent); opacity: 0.5; }
+.floor-empty-text { text-align: center; }
+.floor-empty-text b { display: block; font-size: 14px; color: var(--accent); }
+.floor-empty-text span { font-size: 11px; color: var(--muted); }
+.floor-rack {
+  display: flex; flex-wrap: wrap; gap: 14px; justify-content: center;
+}
+.floor-foot {
+  font-size: 9px; font-family: var(--mono); text-align: center;
+  color: var(--muted); opacity: 0.6; letter-spacing: 1px;
+}
+
+/* ── GPU Card (CSS 3D — shroud, LED, fans, glow) ────────────────────────── */
+.gpu {
+  position: relative;
+  width: 220px;
+  min-height: 140px;
+  background: linear-gradient(180deg, #262b34 0%, #1b1f27 50%, #12151b 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow:
+    0 16px 24px -12px rgba(0,0,0,0.85),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+  padding: 10px 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  animation: gpu-bob 3s ease-in-out infinite;
+}
+.gpu:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 32px -12px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.12);
+}
+.gpu-selected {
+  box-shadow: 0 0 0 2px var(--accent), 0 16px 24px -12px rgba(0,0,0,0.85);
+  transform: translateY(-4px);
+}
+@keyframes gpu-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+.gpu-selected { animation: gpu-bob-sel 2s ease-in-out infinite; }
+@keyframes gpu-bob-sel { 0%,100% { transform: translateY(-4px); } 50% { transform: translateY(-6px); } }
+
+/* top edge — thickness hint */
+.gpu::after {
+  content: ''; position: absolute; bottom: -6px; left: 10px; right: 10px;
+  height: 6px;
+  background: linear-gradient(180deg, #101318, #080a0d);
+  border-radius: 0 0 10px 10px;
+  z-index: -1;
+}
+
+/* bottom glow when mining */
+.gpu::before {
+  content: ''; position: absolute; bottom: -8px; left: 20px; right: 20px;
+  height: 20px;
+  background: radial-gradient(ellipse 50% 100% at 50% 0%, var(--accent), transparent);
+  opacity: 0.25;
+  z-index: -2;
+  animation: gpu-glow 2s ease-in-out infinite;
+}
+@keyframes gpu-glow { 0%,100% { opacity: 0.2; } 50% { opacity: 0.35; } }
+
+/* brand text on top */
+.gpu-top {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 2px;
+}
+.gpu-brand { font-size: 8px; font-family: var(--mono); color: rgba(255,255,255,0.35); letter-spacing: 1px; }
+.gpu-model { font-size: 9px; font-family: var(--mono); font-weight: 700; color: rgba(255,255,255,0.6); }
+
+/* ── LED strip ──────────────────────────────────────────────────────────── */
+.gpu-led {
+  position: relative;
+  height: 10px;
+  border-radius: 5px;
+  background: linear-gradient(90deg,
+    var(--accent-dim), var(--accent), var(--accent-dim), var(--accent), var(--accent-dim));
+  background-size: 200% 100%;
+  animation: led-sweep 2s ease-in-out infinite;
+  box-shadow: 0 0 16px var(--accent);
+  overflow: hidden;
+}
+@keyframes led-sweep {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 0%; }
+  100% { background-position: 0% 0%; }
+}
+.gpu-led-text {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 7px; font-family: var(--mono); font-weight: 700;
+  letter-spacing: 1px; color: #1a0a06;
+  text-shadow: none;
+}
+
+/* ── Fans (conic-gradient — 9 blades, genuinely spinning) ────────────────── */
+.gpu-fans {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+}
+.fan {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #0b0d11;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.fan-blades {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg,
+    rgba(255,255,255,0) 0deg 8deg,
+    #e4eaf2 8deg 26deg,
+    #b4c0d0 26deg 34deg,
+    rgba(255,255,255,0) 34deg 48deg,
+    #e4eaf2 48deg 66deg,
+    #b4c0d0 66deg 74deg,
+    rgba(255,255,255,0) 74deg 88deg,
+    #e4eaf2 88deg 106deg,
+    #b4c0d0 106deg 114deg,
+    rgba(255,255,255,0) 114deg 128deg,
+    #e4eaf2 128deg 146deg,
+    #b4c0d0 146deg 154deg,
+    rgba(255,255,255,0) 154deg 168deg,
+    #e4eaf2 168deg 186deg,
+    #b4c0d0 186deg 194deg,
+    rgba(255,255,255,0) 194deg 208deg,
+    #e4eaf2 208deg 226deg,
+    #b4c0d0 226deg 234deg,
+    rgba(255,255,255,0) 234deg 248deg,
+    #e4eaf2 248deg 266deg,
+    #b4c0d0 266deg 274deg,
+    rgba(255,255,255,0) 274deg 288deg,
+    #e4eaf2 288deg 306deg,
+    #b4c0d0 306deg 314deg,
+    rgba(255,255,255,0) 314deg 328deg,
+    #e4eaf2 328deg 346deg,
+    #b4c0d0 346deg 354deg,
+    rgba(255,255,255,0) 354deg 360deg
+  );
+  animation: fan-spin 0.5s linear infinite;
+}
+.gpu-selected .fan-blades { animation-duration: 0.35s; }
+@keyframes fan-spin { to { transform: rotate(360deg); } }
+
+.fan-hub {
+  position: absolute; top: 50%; left: 50%;
+  width: 18px; height: 18px;
+  margin: -9px 0 0 -9px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #4a5568, #181d24);
+  border: 1px solid rgba(255,255,255,0.12);
+  z-index: 2;
+}
+.fan-ring {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.08);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ── GPU bottom info ────────────────────────────────────────────────────── */
+.gpu-bottom {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: auto;
+}
+.gpu-serial { font-size: 8px; font-family: var(--mono); color: rgba(255,255,255,0.35); }
+.gpu-rate { font-size: 9px; font-family: var(--mono); font-weight: 700; color: #7ee787; }
+
+.gpu-sel-badge {
+  position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
+  font-size: 9px; font-family: var(--mono); font-weight: 700;
+  color: var(--accent);
+  text-shadow: 0 0 8px rgba(255,210,87,0.5);
+  animation: sel-badge 1.5s ease-in-out infinite;
+  white-space: nowrap;
+}
+@keyframes sel-badge {
+  0%,100% { opacity: 0.7; transform: translateX(-50%) translateY(0); }
+  50% { opacity: 1; transform: translateX(-50%) translateY(-2px); }
+}
 
 /* ── Machine panel stats ──────────────────────────────────────────────────── */
 .machine-stats { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
