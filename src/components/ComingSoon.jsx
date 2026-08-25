@@ -52,10 +52,10 @@ export default function ComingSoon() {
             <span className="token-dot" /> PONS
           </span>
           <a className="token-ca"
-             href="https://robinhoodchain.blockscout.com/token/0x39dBED3a2bd333467115dE45665cC57F813C4571"
+             href="https://www.ponsfamily.com/launchpad/0x39dBED3a2bd333467115dE45665cC57F813C4571"
              target="_blank"
              rel="noopener noreferrer">
-            0x39dBED3a2bd33…4571
+            0x39dBED3a2bd33…4571 ↗
           </a>
         </div>
       </div>
