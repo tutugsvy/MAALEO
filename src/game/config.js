@@ -8,6 +8,8 @@ export const TOKEN = {
   decimals: 18,
   supply: 1_000_000_000,        // 1B, fixed-supply launchpad pattern
   contractAddress: '0x39dBED3a2bd333467115dE45665cC57F813C4571', // live on Robinhood Chain ✓
+  // Where the CA link points. Kosongkan → otomatis ke explorer.
+  launchpadUrl: 'https://www.ponsfamily.com/launchpad/0x39dBED3a2bd333467115dE45665cC57F813C4571',
   // Determined emission: the whole pool pays this per hour, split by GPU count.
   poolPerHour: 200,             // 200 PONS/hour divided among ALL GPU owners
 };

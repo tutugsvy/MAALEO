@@ -3,6 +3,10 @@
 // backplate, depth faces, 3D fans w/ hubs), LED glow, particles.
 // No fake signup — honest teaser.
 import logoUrl from '../assets/logo-v2.jpg';
+import { TOKEN } from '../game/config.js';
+
+const tokenUrl = TOKEN.launchpadUrl
+  || `https://robinhoodchain.blockscout.com/token/${TOKEN.contractAddress}`;
 
 // 9 curved blades — lighter leading edge, darker trailing → reads 3D
 const BLADES = 9;
@@ -40,7 +44,7 @@ export default function ComingSoon() {
         <p className="landing-sub">
           GPU mining on Robinhood Chain.
           <br />
-          <b>200 PONS / hour</b> — shared pool, split among every GPU owner.
+          <b>{TOKEN.poolPerHour} {TOKEN.symbol} / hour</b> — shared pool, split among every GPU owner.
         </p>
         <div className="landing-chain">
           <span className="chain-pill">ROBINHOOD CHAIN · 4663</span>
@@ -49,13 +53,13 @@ export default function ComingSoon() {
         </div>
         <div className="landing-token">
           <span className="token-pill">
-            <span className="token-dot" /> PONS
+            <span className="token-dot" /> {TOKEN.symbol}
           </span>
           <a className="token-ca"
-             href="https://www.ponsfamily.com/launchpad/0x39dBED3a2bd333467115dE45665cC57F813C4571"
+             href={tokenUrl}
              target="_blank"
              rel="noopener noreferrer">
-            0x39dBED3a2bd33…4571 ↗
+            {TOKEN.contractAddress.slice(0, 6)}…{TOKEN.contractAddress.slice(-4)} ↗
           </a>
         </div>
       </div>
