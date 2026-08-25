@@ -16,7 +16,7 @@ export default function HUD({ state, onAction }) {
   return (
     <header className="hud">
       <div className="hud-brand">
-        <img src="/assets/logo-user.jpg" alt="PONSMINER" className="hud-logo" />
+        <img src="/assets/logo-v2.jpg" alt="PONSMINER" className="hud-logo" />
         <div>
           <div className="hud-title">PONSMINER</div>
           <div className="hud-tag">gpu mining · robinhood chain</div>
