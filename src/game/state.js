@@ -78,9 +78,13 @@ export function tick(state, now = Date.now()) {
   };
 }
 
-// ── connect wallet (prototype: local record) ────────────────────────────────
+// ── connect / disconnect wallet (real injected address from wallet.js) ─────
 export function connectWallet(state, address) {
   return { ...state, wallet: address };
+}
+
+export function disconnectWallet(state) {
+  return { ...state, wallet: null };
 }
 
 export function sellPons(state) {

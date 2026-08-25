@@ -93,6 +93,17 @@ body {
   box-shadow: 0 0 6px var(--green);
   margin-right: 4px;
 }
+.chain-badge {
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--accent2);
+  background: rgba(143,211,255,0.12);
+  border: 1px solid rgba(143,211,255,0.3);
+  padding: 1px 5px;
+  border-radius: 8px;
+  margin-left: 6px;
+  white-space: nowrap;
+}
 
 /* ── GPU detail ──────────────────────────────────────────────────────────── */
 .gpu-detail { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); }

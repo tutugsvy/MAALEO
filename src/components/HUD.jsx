@@ -2,16 +2,19 @@
 import { useEffect, useState } from 'react';
 import { TOKEN, PAY_TOKEN, TREASURY } from '../game/config.js';
 import { perGpuPerHour } from '../game/state.js';
+import { getChainInfo, hasInjectedWallet } from '../game/wallet.js';
 
 export default function HUD({ state, onAction }) {
   const [now, setNow] = useState(Date.now());
+  const [chain, setChain] = useState(() => getChainInfo());
   useEffect(() => {
-    const iv = setInterval(() => setNow(Date.now()), 1000);
+    const iv = setInterval(() => { setNow(Date.now()); setChain(getChainInfo()); }, 2000);
     return () => clearInterval(iv);
   }, []);
 
   const rate = perGpuPerHour(state);
   const gpuCount = state.totalGpuCount || state.gpus.length;
+  const injected = hasInjectedWallet();
 
   return (
     <header className="hud">
@@ -33,11 +36,12 @@ export default function HUD({ state, onAction }) {
 
       <div className="hud-actions">
         {state.wallet ? (
-          <button className="btn btn-gold" title="Connected wallet" onClick={() => onAction('disconnect')}>
+          <button className="btn btn-gold" title="Klik untuk disconnect" onClick={() => onAction('disconnect')}>
             <span className="wallet-dot" /> {shortAddr(state.wallet)}
+            {chain.chainId && <span className="chain-badge">{chain.name}</span>}
           </button>
         ) : (
-          <button className="btn btn-gold" onClick={() => onAction('connect')}>
+          <button className="btn btn-gold" onClick={() => onAction('connect')} title={injected ? 'Konek ke injected wallet' : 'Belum ada injected wallet terdeteksi'}>
             ⚡ CONNECT WALLET
           </button>
         )}
