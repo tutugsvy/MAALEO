@@ -12,7 +12,7 @@ export const TOKEN = {
   poolPerHour: 200,             // 200 PONS/hour divided among ALL GPU owners
 };
 
-// Payment token details (token will be deployed by the user later — CA placeholder)
+// Payment token details — NOT deployed yet; game runs on play PAY for now.
 export const PAY_TOKEN = {
   symbol: 'PAY',                // ← ganti jadi simbol token yang lo deploy nanti
   name: 'Payment Token',
@@ -26,6 +26,7 @@ export const TREASURY = '0x0000000000000000000000000000000000000000'; // ← isi
 // ─── CHAIN ──────────────────────────────────────────────────────────────────
 export const TARGET_CHAIN_ID = 4663;         // Robinhood Chain
 export const NETWORK_NAME = 'Robinhood Chain';
+export const EXPLORER_URL = 'https://robinhoodchain.blockscout.com';
 
 // ─── GPU ECONOMY ────────────────────────────────────────────────────────────
 export const GPU_COST = 500_000;         // 500k PAY tokens per GPU

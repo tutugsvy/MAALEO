@@ -47,7 +47,7 @@ export default function Shop({ state, onAction, onClose }) {
         </div>
 
         <div className="hint-box">
-          <b>Prototype:</b> play {PAY_TOKEN.symbol} only. The real game: wallet pays {PAY_TOKEN.symbol} → treasury (<code>{shortAddr(TREASURY)}</code>), then your GPU accrues its share of {TOKEN.poolPerHour} PONS/hour.
+          <b>Prototype:</b> play {PAY_TOKEN.symbol} only — payment token belum di-deploy. Reward token <b>PONS</b> udah live: <code>{shortAddr(TOKEN.contractAddress)}</code>. Real game: wallet pays {PAY_TOKEN.symbol} → treasury (<code>{shortAddr(TREASURY)}</code>), then your GPU accrues its share of {TOKEN.poolPerHour} PONS/hour.
         </div>
       </div>
     </div>

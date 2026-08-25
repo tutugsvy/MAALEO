@@ -84,7 +84,9 @@ body {
 .hud-stat { display: flex; flex-direction: column; }
 .hud-stat-label { font-size: 10px; color: var(--muted); font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.5px; }
 .hud-stat-value { font-size: 13px; font-weight: 700; font-family: var(--mono); }
-.hud-stat-sub { font-size: 9px; color: var(--muted); }
+.hud-stat-sub { font-size: 9px; color: var(--muted); margin-top: 2px; }
+.hud-stat-sub .token-mini { color: var(--accent2); text-decoration: none; border-bottom: 1px dashed rgba(143,211,255,0.35); padding-bottom: 1px; }
+.hud-stat-sub .token-mini:hover { color: var(--accent); border-bottom-color: var(--accent); }
 .hud-market { display: flex; gap: 10px; }
 .mkt-tick { display: flex; flex-direction: column; min-width: 76px; padding: 4px 8px; background: rgba(255,255,255,0.03); border-radius: 4px; }
 .mkt-sym { font-size: 9px; color: var(--muted); font-family: var(--mono); }

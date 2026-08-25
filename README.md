@@ -11,8 +11,9 @@ Buy GPU cards with PAY tokens, earn PONS emissions. No fake signups, no points �
 
 | State | Description |
 |---|---|
-| **Landing** | OPEN SOON silhouette scene with 3D-modeled GPU rigs, active |
-| **Game** | Parked until token deployment — EIP-1193 wallet connect, GPU purchase, pool mining all coded |
+| **Game** | Mining game active — buy GPU (play PAY), earn PONS (live token) |
+| **Reward token** | PONS live: `0x39dBED3a2bd333467115dE45665cC57F813C4571` |
+| **Payment token** | PAY **not deployed yet** — game runs on play money (600k demo PAY per save) |
 | **Live** | [`tutugsvy.github.io/MAALEO`](https://tutugsvy.github.io/MAALEO/) |
 
 ---
@@ -266,8 +267,9 @@ export const TICK_SECONDS = 60;    // accrual every minute
 - [x] GPU purchase + per-wallet save
 - [x] Pool mining (200 PONS/hour ÷ total GPU)
 - [x] Design system: Stock Miners-inspired pixel theme
-- [ ] Deploy PAY token
-- [ ] Activate game UI (flip landing → game mode)
+- [x] PONS reward token live (CA filled, verified on-chain)
+- [ ] Deploy PAY token → real purchase flow (approve + transferFrom to TREASURY)
+- [ ] On-chain accrual / claim for mined PONS
 - [ ] Token staking / treasury dashboard
 - [ ] Leaderboard / top miners
 

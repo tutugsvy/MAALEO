@@ -1,6 +1,6 @@
 // ─── PONSMINER · Top HUD — PAY, PONS, wallet connect, pool rate ────────────
 import { useEffect, useState } from 'react';
-import { TOKEN, PAY_TOKEN, TREASURY } from '../game/config.js';
+import { TOKEN, PAY_TOKEN, TREASURY, EXPLORER_URL } from '../game/config.js';
 import { perGpuPerHour } from '../game/state.js';
 import { getChainInfo, hasInjectedWallet } from '../game/wallet.js';
 import logoUrl from '../assets/logo-v2.jpg';
@@ -28,8 +28,12 @@ export default function HUD({ state, onAction }) {
       </div>
 
       <div className="hud-stats">
-        <StatBox label={PAY_TOKEN.symbol + ' BALANCE'} value={Math.floor(state.pay).toLocaleString()} accent="#ffd257" />
-        <StatBox label="PONS MINED" value={state.pons.toFixed(4)} accent="#7ee787" />
+        <StatBox label={PAY_TOKEN.symbol + ' BALANCE'} value={Math.floor(state.pay).toLocaleString()} accent="#ffd257" sub="demo" />
+        <StatBox label="PONS MINED" value={state.pons.toFixed(4)} accent="#7ee787" sub={
+          <a className="token-mini" href={`${EXPLORER_URL}/token/${TOKEN.contractAddress}`} target="_blank" rel="noopener noreferrer">
+            {TOKEN.contractAddress ? shortAddr(TOKEN.contractAddress) : ''} ↗
+          </a>
+        } />
         <StatBox label="MY GPU" value={state.gpus.length} />
         <StatBox label="FLOOR GPU" value={gpuCount} />
         <StatBox label="RATE / GPU" value={rate.toFixed(2) + ' P/h'} sub={`pool ${TOKEN.poolPerHour} P/h ÷ ${gpuCount}`} accent="#8fd3ff" />
