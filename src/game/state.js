@@ -1,7 +1,7 @@
-// ─── MINEBROKER · game state ───────────────────────────────────────────────
+// ─── PONSMINER · game state ────────────────────────────────────────────────
 // Pure state transitions. No React in here — easy to test, easy to serialize.
 
-import { SHIFTS, TIERS, HABITS, APPETITES, SEAMS, TICKERS,
+import { SHIFTS, TIERS, HABITS, APPETITES, SEAMS, TOKEN,
          FUEL_PLAY, MACHINE_PLAY, BAY_PLAY, SHIFT_COST, SETTLE_SECONDS,
          BASELINE_DIGS, FLOOR_CAPACITY } from './config.js';
 import { mulberry32, pick, randInt, weightedPick, uid, clamp } from './rng.js';
@@ -15,7 +15,6 @@ export function makeMachine(seed = Date.now()) {
     habit: pick(rng, HABITS),
     appetite: pick(rng, APPETITES),
     seam: pick(rng, SEAMS),
-    bound: null,          // ticker symbol once bound
     ore: 0,               // ore earned this run (register, never resets)
     shiftBought: new Set(), // shift ids bought ahead
     born: Date.now(),
@@ -27,13 +26,12 @@ export function makeMachine(seed = Date.now()) {
 export function freshSave() {
   const rng = mulberry32(Date.now());
   return {
-    version: 1,
+    version: 2,
     fuel: FUEL_PLAY,
     machines: [makeMachine(rng() * 1e9), makeMachine(rng() * 1e9)],
     bays: 2,                     // 2 machines fit by default
     owned: [],                   // machines without a bay wait in store
-    settled: {},                 // ticker → tokenized stock units (play)
-    cash: 0,                     // play cash from selling settled holdings
+    pons: 0,                     // mined $PONS (settled, spendable)
     register: [],                // combos actually worked (tier × habit × seam)
     shiftState: SHIFTS.map(s => ({
       id: s.id,
@@ -70,7 +68,7 @@ export function digRate(machine, shift, floorBusy, seam) {
 }
 
 // Burn cost (fuel) per settle for a machine
-export function burnCost(machine, baseBurn = 0.02) {
+export function burnCost(machine, baseBurn = 2) {
   const t = tierOf(machine);
   let burn = baseBurn * t.oreMult;
   if (machine.appetite.id === 'GREEDY')  burn *= 1.35;
@@ -85,7 +83,8 @@ export function poolShare(machine, totalOre) {
 }
 
 // ── settle one shift ────────────────────────────────────────────────────────
-// Returns { pools, settled } — new pool state per shift + any stock settled.
+// PONSMINER pays a DETERMINED amount of $PONS per settle (TOKEN.emissionPerSettle),
+// split by ore share. This is the core loop: dig ore → earn fixed PONS.
 export function settleShift(state, shiftId, now = Date.now()) {
   const shift = state.shiftState.find(s => s.id === shiftId);
   if (!shift || !shift.bought) return state;
@@ -93,7 +92,7 @@ export function settleShift(state, shiftId, now = Date.now()) {
   if (now - shift.lastSettle < SETTLE_SECONDS * 1000) return state;
 
   // everyone on the floor works this shift
-  const workers = state.machines.filter(m => m.shiftBought.has(shiftId) && m.bound);
+  const workers = state.machines.filter(m => m.shiftBought.has(shiftId));
   if (workers.length === 0) {
     shift.lastSettle = now;
     return { ...state, shiftState: [...state.shiftState] };
@@ -102,29 +101,28 @@ export function settleShift(state, shiftId, now = Date.now()) {
   const floorBusy = cfg.busyBoost + 0.5 + Math.random() * 0.3; // 0.5–0.95
   const seam = pick(mulberry32(now), SEAMS).id; // seam drifts per settle
 
-  // each worker digs ore + burns fuel
+  // each worker digs ore
   let totalOre = 0;
   const digs = workers.map(m => {
     const ore = digRate(m, cfg, floorBusy, seam);
     m.ore += ore;
     totalOre += ore;
-    // register combo
     const combo = `${m.tier}-${m.habit.id}-${m.seam.id}`;
     if (!state.register.includes(combo)) state.register.push(combo);
     return { m, ore };
   });
 
-  // pool split by ore share → tokenized stock (play)
-  const share = digs.map(({ m, ore }) => ({
+  // DETERMINED PAYOUT: fixed PONS split by ore share
+  // emissionPerSettle = the "jumlah token yang ditentukan" (fixed, readable)
+  const emission = TOKEN.emissionPerSettle;
+  const shares = digs.map(({ m, ore }) => ({
     m,
-    stock: (ore / totalOre) * 1.0, // 1.0 stock unit total per settle (play)
+    pons: (ore / totalOre) * emission,
   }));
 
-  const nextSettled = { ...state.settled };
-  for (const { m, stock } of share) {
-    if (m.bound) {
-      nextSettled[m.bound] = (nextSettled[m.bound] || 0) + stock;
-    }
+  let pons = state.pons;
+  for (const { m, pons: cut } of shares) {
+    pons = pons + cut;
   }
 
   shift.poolOre = totalOre;
@@ -133,7 +131,7 @@ export function settleShift(state, shiftId, now = Date.now()) {
   return {
     ...state,
     machines: [...state.machines],
-    settled: nextSettled,
+    pons: +pons.toFixed(4),
     register: [...state.register],
     shiftState: [...state.shiftState],
   };
@@ -178,15 +176,6 @@ export function placeMachine(state, machineId) {
   };
 }
 
-export function bindMachine(state, machineId, ticker) {
-  return {
-    ...state,
-    machines: state.machines.map(m =>
-      m.id === machineId ? { ...m, bound: ticker } : m
-    ),
-  };
-}
-
 export function digBay(state) {
   if (state.fuel < BAY_PLAY) return state;
   return {
@@ -212,7 +201,6 @@ export function mergeMachines(state, aId, bId) {
     habit: (a.ore >= b.ore ? a : b).habit,
     appetite: (a.ore >= b.ore ? a : b).appetite,
     seam: rng() < 0.5 ? a.seam : b.seam,
-    bound: rng() < 0.5 ? a.bound : b.bound,
     ore: a.ore + b.ore,
     shiftBought: new Set([...a.shiftBought, ...b.shiftBought]),
     born: Date.now(),
@@ -228,16 +216,10 @@ export function mergeMachines(state, aId, bId) {
   };
 }
 
-export function sellHeld(state, ticker) {
-  const units = state.settled[ticker] || 0;
-  if (units <= 0) return state;
-  const price = (TICKERS.find(t => t.symbol === ticker) || {}).price || 0;
-  const cash = units * price;
-  return {
-    ...state,
-    cash: +(state.cash + cash).toFixed(4),
-    settled: { ...state.settled, [ticker]: 0 },
-  };
+export function sellPons(state) {
+  // In the real game, mined PONS could be swapped/sold. In the prototype,
+  // we just track it — no fake exchange rate.
+  return state;
 }
 
 export function settleAll(state, now = Date.now()) {

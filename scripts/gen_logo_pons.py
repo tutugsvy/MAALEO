@@ -1,4 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+#!/usr/bin/env python3
+"""Generate PONSMINER logo (SVG + favicon) — pickaxe + P token mark, amber industrial."""
+import os
+OUT = "/root/minebroker/public/assets"
+os.makedirs(OUT, exist_ok=True)
+
+# Logo concept: crossed pickaxe + P (Pons) in a hexagon
+svg = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
   <defs>
     <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#ffd257"/>
@@ -29,4 +36,26 @@
   <!-- sparkle -->
   <circle cx="152" cy="50" r="4" fill="#fff3c4"/>
   <circle cx="48" cy="70" r="2.5" fill="#ffd257" opacity="0.8"/>
-</svg>
+</svg>'''
+
+with open(f"{OUT}/logo.svg", "w") as f:
+    f.write(svg)
+print("logo.svg written")
+
+# favicon PNG
+from PIL import Image, ImageDraw
+import math
+img = Image.new("RGBA", (256, 256), (0, 0, 0, 0))
+d = ImageDraw.Draw(img)
+d.rounded_rectangle([8, 8, 248, 248], radius=48, fill=(13, 15, 20, 255), outline=(42, 47, 56, 255), width=5)
+cx, cy, r = 128, 128, 92
+pts = [(cx + r * math.cos(math.pi/6 + i * math.pi/3), cy + r * math.sin(math.pi/6 + i * math.pi/3)) for i in range(6)]
+d.polygon(pts, outline=(255, 180, 60, 255), width=7)
+d.polygon([(70, 148), (52, 166), (60, 174), (78, 156)], fill=(255, 170, 40, 255))
+d.line([(88, 158), (152, 92)], fill=(120, 130, 145, 255), width=12)
+# P badge
+d.ellipse([136, 68, 176, 108], fill=(13, 15, 20, 255), outline=(255, 180, 60, 255), width=5)
+d.arc([140, 72, 172, 104], 90, 270, fill=(255, 170, 40, 255), width=6)
+d.line([(146, 72), (146, 104)], fill=(255, 170, 40, 255), width=6)
+img.save(f"{OUT}/favicon.png")
+print("favicon.png written")

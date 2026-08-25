@@ -1,4 +1,4 @@
-// ─── MINEBROKER · Shop modal — buy machines, dig bays, manage store ────────
+// ─── PONSMINER · Shop modal — buy machines, dig bays, manage store ─────────
 import { MACHINE_PLAY, BAY_PLAY, FLOOR_CAPACITY } from '../game/config.js';
 
 export default function Shop({ state, onAction, onClose }) {
@@ -19,7 +19,7 @@ export default function Shop({ state, onAction, onClose }) {
             <div className="shop-card-title">BUY A MACHINE</div>
             <p className="muted small">Fresh tier-I rig. Traits roll at purchase. Sprite shows its character.</p>
             <button className="btn btn-gold" disabled={!canBuy} onClick={() => onAction('buy-machine')}>
-              BUY · ${MACHINE_PLAY.toFixed(2)}
+              BUY · {MACHINE_PLAY} PONS
             </button>
           </div>
 
@@ -27,7 +27,7 @@ export default function Shop({ state, onAction, onClose }) {
             <div className="shop-card-title">DIG ANOTHER BAY</div>
             <p className="muted small">Machines never shrink to fit — the floor grows instead. {state.bays}/{FLOOR_CAPACITY} bays.</p>
             <button className="btn btn-gold" disabled={!canDig} onClick={() => onAction('dig-bay')}>
-              DIG BAY · ${BAY_PLAY.toFixed(2)}
+              DIG BAY · {BAY_PLAY} PONS
             </button>
           </div>
         </div>
@@ -52,7 +52,7 @@ export default function Shop({ state, onAction, onClose }) {
         )}
 
         <div className="hint-box">
-          <b>Prototype:</b> everything here is play money. The real game settles tokenized stock — and needs a live $FUEL-style token + game contracts.
+          <b>Prototype:</b> everything here is play money. The real game pays a fixed, determined amount of $PONS per settle — and needs live game contracts.
         </div>
       </div>
     </div>

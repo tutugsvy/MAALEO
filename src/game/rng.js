@@ -1,4 +1,4 @@
-// ─── MINEBROKER · deterministic RNG + helpers ──────────────────────────────
+// ─── PONSMINER · deterministic RNG + helpers ──────────────────────────────
 
 // Mulberry32 — tiny, seeded, deterministic. Same seed → same traits.
 export function mulberry32(seed) {

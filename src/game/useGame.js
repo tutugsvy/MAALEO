@@ -1,4 +1,4 @@
-// ─── MINEBROKER · useGame hook — state, autosave, settle loop ──────────────
+// ─── PONSMINER · useGame hook — state, autosave, settle loop ──────────────
 import { useEffect, useReducer, useRef, useCallback } from 'react';
 import { freshSave, settleAll } from './state.js';
 import { SAVE_KEY, SETTLE_SECONDS } from './config.js';

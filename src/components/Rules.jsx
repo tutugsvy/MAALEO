@@ -1,4 +1,6 @@
-// ─── MINEBROKER · Rules modal — how the game works ─────────────────────────
+// ─── PONSMINER · Rules modal — how the game works ──────────────────────────
+import { TOKEN } from '../game/config.js';
+
 export default function Rules({ onClose }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -11,14 +13,14 @@ export default function Rules({ onClose }) {
           <li><b>You run a mine.</b> Machines on the floor dig ore, but only on shifts you bought for them.</li>
           <li><b>Four shifts a day</b>, fixed UTC: 00-06, 06-12, 12-18, 18-24. Buy one, or three ahead so the floor works while the tab is shut.</li>
           <li><b>Every two minutes</b> a shift settles. Everything dug on the floor goes into one pool, split by how much ore each rig pulled.</li>
+          <li><b>PONSMINER pays a determined amount of $PONS</b> — {TOKEN.emissionPerSettle} PONS per settle, fixed and readable. No hidden supply, no games. Your cut = your ore share of the pool.</li>
           <li><b>The sprite is the token.</b> Chassis finish = habit, stacks = appetite, wear = seam. You can read a rig's character at a glance.</li>
           <li><b>Merge to climb.</b> Two of the same tier pressed together make the next tier — the child inherits traits, so which pair you press is the decision.</li>
           <li><b>Every upside carries a downside.</b> Greedy digs more but burns more. Off-seam digs 10% worse. Tier is the one thing nothing rolls.</li>
-          <li><b>The bar keeps score.</b> A tier-I rig returns about $6 per $1 of fuel at launch, tapering toward $1.30 as the mine matures. The floor improves too — stand still and you pay to dig.</li>
-          <li><b>Ore settles as real tokenized stock.</b> In the prototype it's play money. On chain, it's stock tokens you can hold or sell.</li>
+          <li><b>The floor improves too.</b> Stand still and you pay to dig. Merge to stay ahead of the baseline.</li>
         </ol>
         <div className="hint-box">
-          <b>Prototype honesty:</b> play money only. No wallet, no token, no live stock. The concept is the whole of it — every number on screen you can check.
+          <b>Prototype honesty:</b> play money only. No wallet, no live token, no chain. The concept is the whole of it — every number on screen you can check.
         </div>
       </div>
     </div>

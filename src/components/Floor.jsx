@@ -1,4 +1,4 @@
-// ─── MINEBROKER · Floor — the mine floor where rigs dig ─────────────────────
+// ─── PONSMINER · Floor — the mine floor where rigs dig ─────────────────────
 import { useEffect, useRef, useState } from 'react';
 import { drawMachine } from '../game/sprite.js';
 import { SHIFTS } from '../game/config.js';

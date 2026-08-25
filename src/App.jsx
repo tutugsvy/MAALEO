@@ -1,7 +1,7 @@
-// ─── MINEBROKER · App — main layout, state orchestrator ────────────────────
+// ─── PONSMINER · App — main layout, state orchestrator ─────────────────────
 import { useState, useCallback } from 'react';
 import { SHIFTS, SHIFT_COST } from './game/config.js';
-import { buyShift, buyMachine, placeMachine, bindMachine, digBay, mergeMachines, sellHeld, freshSave } from './game/state.js';
+import { buyShift, buyMachine, placeMachine, digBay, mergeMachines, freshSave } from './game/state.js';
 import { useGame } from './game/useGame.js';
 import HUD from './components/HUD.jsx';
 import Floor from './components/Floor.jsx';
@@ -38,14 +38,14 @@ export default function App() {
       case 'buy-shift': {
         const id = args[0];
         const ns = buyShift(s, id);
-        if (ns === s) { showToast('Not enough fuel'); return; }
+        if (ns === s) { showToast('Not enough PONS'); return; }
         dispatch({ type: 'LOAD', save: ns });
         showToast(`Bought ${SHIFTS.find(x => x.id === id).short}`);
         break;
       }
       case 'buy-machine': {
         const ns = buyMachine(s);
-        if (ns === s) { showToast('Not enough fuel'); return; }
+        if (ns === s) { showToast('Not enough PONS'); return; }
         dispatch({ type: 'LOAD', save: ns });
         showToast('New rig in store');
         break;
@@ -56,16 +56,9 @@ export default function App() {
         dispatch({ type: 'LOAD', save: ns });
         break;
       }
-      case 'bind': {
-        const [mid, ticker] = args;
-        const ns = bindMachine(s, mid, ticker);
-        dispatch({ type: 'LOAD', save: ns });
-        showToast(`Bound to ${ticker}`);
-        break;
-      }
       case 'dig-bay': {
         const ns = digBay(s);
-        if (ns === s) { showToast('Not enough fuel'); return; }
+        if (ns === s) { showToast('Not enough PONS'); return; }
         dispatch({ type: 'LOAD', save: ns });
         showToast('New bay dug');
         break;
@@ -75,12 +68,10 @@ export default function App() {
         const m = s.machines.find(x => x.id === mid);
         if (!m) return;
         if (m.shiftBought.has(sid)) {
-          // remove shift (you can't really refund — but prototype allows toggle)
           m.shiftBought.delete(sid);
           dispatch({ type: 'LOAD', save: { ...s, machines: [...s.machines] } });
         } else {
-          // buy shift for this specific machine
-          if (s.fuel < SHIFT_COST) { showToast('Not enough fuel'); return; }
+          if (s.fuel < SHIFT_COST) { showToast('Not enough PONS'); return; }
           m.shiftBought.add(sid);
           const ns = { ...s, fuel: +(s.fuel - SHIFT_COST).toFixed(4), machines: [...s.machines] };
           dispatch({ type: 'LOAD', save: ns });
@@ -101,18 +92,12 @@ export default function App() {
           if (!a || !b) { setMergeTarget(null); return; }
           if (a.tier !== b.tier) { showToast('Must be same tier'); setMergeTarget(null); return; }
           const ns = mergeMachines(s, mergeTarget, mid);
-          if (ns === s) { showToast('Not enough fuel or max tier'); setMergeTarget(null); return; }
+          if (ns === s) { showToast('Not enough PONS or max tier'); setMergeTarget(null); return; }
           dispatch({ type: 'LOAD', save: ns });
           setMergeTarget(null);
           setSelectedId(ns.machines[ns.machines.length - 1]?.id);
           showToast(`Merged to tier ${a.tier + 1}!`);
         }
-        break;
-      }
-      case 'sell-holding': {
-        const ns = sellHeld(s, args[0]);
-        dispatch({ type: 'LOAD', save: ns });
-        showToast('Sold holdings');
         break;
       }
       case 'open-shop': setShowShop(true); break;
@@ -129,8 +114,6 @@ export default function App() {
       default: break;
     }
   }, [getState, dispatch, mergeTarget, showToast]);
-
-  const settledEntries = Object.entries(state.settled).filter(([, v]) => v > 0);
 
   return (
     <div className="app">
@@ -158,17 +141,15 @@ export default function App() {
             state={state}
             onAction={handleAction}
           />
-          {/* settled holdings */}
-          {settledEntries.length > 0 && (
+          {/* mined PONS */}
+          {state.pons > 0 && (
             <div className="panel holdings-panel">
-              <h2>SETTLED HOLDINGS</h2>
-              {settledEntries.map(([ticker, units]) => (
-                <div className="holding-row" key={ticker}>
-                  <span className="holding-sym">{ticker}</span>
-                  <span className="holding-units">{units.toFixed(4)}</span>
-                  <button className="btn btn-sm" onClick={() => handleAction('sell-holding', ticker)}>SELL</button>
-                </div>
-              ))}
+              <h2>MINED PONS</h2>
+              <div className="holding-row">
+                <span className="holding-sym">PONS</span>
+                <span className="holding-units">{state.pons.toFixed(4)}</span>
+                <span className="muted small">fixed emission · no fake rate</span>
+              </div>
             </div>
           )}
           {/* merge status */}

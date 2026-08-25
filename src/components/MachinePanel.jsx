@@ -1,4 +1,4 @@
-// ─── MINEBROKER · Side panel — selected machine detail + actions ───────────
+// ─── PONSMINER · Side panel — selected machine detail + actions ────────────
 import { SHIFTS, TIERS } from '../game/config.js';
 
 export default function MachinePanel({ machine, state, onAction }) {
@@ -15,7 +15,6 @@ export default function MachinePanel({ machine, state, onAction }) {
   }
   const tier = TIERS[machine.tier];
   const ownedShifts = state.shiftState.filter(s => machine.shiftBought.has(s.id));
-  const sel = state.shiftState.find(s => s.id === 'AFTERNOON');
 
   return (
     <aside className="panel machine-panel">
@@ -29,19 +28,8 @@ export default function MachinePanel({ machine, state, onAction }) {
         <Stat label="APPETITE" value={machine.appetite.label} sub={machine.appetite.desc} color={machine.appetite.color} />
         <Stat label="SEAM" value={machine.seam.label} sub={machine.seam.desc} color={machine.seam.color} />
         <Stat label="ORE EARNED" value={Math.round(machine.ore).toLocaleString()} sub="all-time register" />
-        <Stat label="BOUND TO" value={machine.bound || '—'} sub={machine.bound ? 'tokenized stock' : 'bind below'} />
+        <Stat label="MINES" value="PONS POOL" sub="fixed emission · split by ore share" color="#ffd257" />
       </div>
-
-      {!machine.bound && (
-        <div className="bind-row">
-          <label>BIND TO TICKER</label>
-          <div className="ticker-btns">
-            {['NVDA', 'AAPL', 'MSFT', 'TSLA'].map(t => (
-              <button key={t} className="btn btn-sm" onClick={() => onAction('bind', machine.id, t)}>{t}</button>
-            ))}
-          </div>
-        </div>
-      )}
 
       <div className="shift-row">
         <label>SHIFTS BOUGHT</label>

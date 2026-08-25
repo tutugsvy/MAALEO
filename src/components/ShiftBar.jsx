@@ -1,5 +1,5 @@
-// ─── MINEBROKER · Shift bar — buy shifts for the floor ─────────────────────
-import { SHIFTS, SHIFT_COST } from '../game/config.js';
+// ─── PONSMINER · Shift bar — buy shifts for the floor ──────────────────────
+import { SHIFTS, SHIFT_COST, TOKEN } from '../game/config.js';
 
 export default function ShiftBar({ state, onAction }) {
   const now = Date.now();
@@ -10,7 +10,7 @@ export default function ShiftBar({ state, onAction }) {
     <section className="shift-bar">
       <div className="shift-bar-title">
         <h2>SHIFTS · 4 A DAY</h2>
-        <span className="muted">fix UTC blocks · rig digs only bought shifts</span>
+        <span className="muted">fix UTC blocks · rig digs only bought shifts · pays {TOKEN.emissionPerSettle} PONS/settle</span>
       </div>
       <div className="shift-list">
         {SHIFTS.map(s => {
@@ -29,11 +29,11 @@ export default function ShiftBar({ state, onAction }) {
               {st?.bought ? (
                 <div className="shift-owned">
                   <span className="ok">✓ BOUGHT</span>
-                  <span className="muted small">pays ore every 2 min</span>
+                  <span className="muted small">pays PONS every 2 min</span>
                 </div>
               ) : (
                 <button className="btn btn-sm" onClick={() => onAction('buy-shift', s.id)}>
-                  BUY ${SHIFT_COST.toFixed(2)}
+                  BUY {SHIFT_COST} PONS
                 </button>
               )}
             </div>

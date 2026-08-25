@@ -1,4 +1,4 @@
-// ─── MINEBROKER · procedural machine sprite renderer ───────────────────────
+// ─── PONSMINER · procedural machine sprite renderer ───────────────────────
 // Every rig is drawn from its traits — no image assets, fully deterministic.
 // chassis finish = habit · stacks = appetite · wear = seam · tier badge = tier
 
@@ -146,21 +146,19 @@ export function drawMachine(ctx, machine, x, y, s = 1, t = 0, opts = {}) {
   ctx.textBaseline = 'middle';
   ctx.fillText('I'.repeat(machine.tier), -W / 2 + 12 * s, -H * 0.3 + 0.5 * s);
 
-  // bound ticker label
-  if (machine.bound) {
-    ctx.fillStyle = '#0c0e12';
-    rr(ctx, W / 2 - 30 * s, H * 0.02, 30 * s, 12 * s, 3 * s);
-    ctx.fill();
-    ctx.strokeStyle = col.edge;
-    ctx.lineWidth = 1 * s;
-    rr(ctx, W / 2 - 30 * s, H * 0.02, 30 * s, 12 * s, 3 * s);
-    ctx.stroke();
-    ctx.fillStyle = col.edge;
-    ctx.font = `bold ${Math.round(7 * s)}px 'JetBrains Mono', monospace`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(machine.bound, W / 2 - 15 * s, H * 0.08);
-  }
+  // PONS pool badge
+  ctx.fillStyle = '#0c0e12';
+  rr(ctx, W / 2 - 32 * s, H * 0.02, 32 * s, 12 * s, 3 * s);
+  ctx.fill();
+  ctx.strokeStyle = col.edge;
+  ctx.lineWidth = 1 * s;
+  rr(ctx, W / 2 - 32 * s, H * 0.02, 32 * s, 12 * s, 3 * s);
+  ctx.stroke();
+  ctx.fillStyle = col.edge;
+  ctx.font = `bold ${Math.round(7 * s)}px 'JetBrains Mono', monospace`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('PONS', W / 2 - 16 * s, H * 0.08);
 
   // selection ring
   if (opts.selected) {

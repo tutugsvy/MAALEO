@@ -1,6 +1,6 @@
-// ─── MINEBROKER · Top HUD — fuel, cash, shift clock, market ────────────────
+// ─── PONSMINER · Top HUD — PONS, shifts, emission clock ────────────────────
 import { useEffect, useState } from 'react';
-import { SHIFTS, TICKERS, SHIFT_COST } from '../game/config.js';
+import { SHIFTS, TOKEN } from '../game/config.js';
 
 export default function HUD({ state, onAction }) {
   const [now, setNow] = useState(Date.now());
@@ -15,36 +15,39 @@ export default function HUD({ state, onAction }) {
   const nextStart = nextShift.utcStart;
   const hoursUntil = nextStart >= hour ? nextStart - hour : 24 - hour + nextStart;
 
-  const market = TICKERS.map(t => ({
-    ...t,
-    move: ((Math.sin(now / 60000 + TICKERS.indexOf(t)) * 2.5) + (Math.cos(now / 90000 + TICKERS.indexOf(t)) * 1.5)).toFixed(2),
-  }));
+  // countdown to next settle (2-min cycle)
+  const settleCycle = 120;
+  const secsInCycle = Math.floor((now / 1000) % settleCycle);
+  const countdown = settleCycle - secsInCycle;
 
   return (
     <header className="hud">
       <div className="hud-brand">
-        <img src="/assets/logo.svg" alt="MINEBROKER" className="hud-logo" />
+        <img src="/assets/logo.svg" alt="PONSMINER" className="hud-logo" />
         <div>
-          <div className="hud-title">MINEBROKER</div>
+          <div className="hud-title">PONSMINER</div>
           <div className="hud-tag">mining game · robinhood chain</div>
         </div>
       </div>
 
       <div className="hud-stats">
-        <StatBox label="FUEL" value={state.fuel.toFixed(2)} accent="#ffd257" />
-        <StatBox label="CASH" value={'$' + state.cash.toFixed(2)} accent="#7ee787" />
+        <StatBox label="PONS" value={Math.floor(state.fuel).toLocaleString()} accent="#ffd257" />
+        <StatBox label="MINED" value={state.pons.toFixed(2)} accent="#7ee787" />
         <StatBox label="BAYS" value={`${state.machines.length}/${state.bays}`} />
         <StatBox label="SHIFT" value={currentShift.short} sub={`next in ${hoursUntil}h`} accent="#8fd3ff" />
       </div>
 
       <div className="hud-market">
-        {market.map(m => (
-          <div className="mkt-tick" key={m.symbol}>
-            <span className="mkt-sym">{m.symbol}</span>
-            <span className="mkt-price">${m.price.toFixed(2)}</span>
-            <span className={m.move >= 0 ? 'mkt-up' : 'mkt-down'}>{m.move >= 0 ? '▲' : '▼'} {Math.abs(m.move)}%</span>
-          </div>
-        ))}
+        <div className="mkt-tick">
+          <span className="mkt-sym">EMISSION</span>
+          <span className="mkt-price">{TOKEN.emissionPerSettle} PONS</span>
+          <span className="mkt-up">per settle · fixed</span>
+        </div>
+        <div className="mkt-tick">
+          <span className="mkt-sym">NEXT SETTLE</span>
+          <span className="mkt-price">{countdown}s</span>
+          <span className="mkt-up">every 2 min</span>
+        </div>
       </div>
 
       <div className="hud-actions">
