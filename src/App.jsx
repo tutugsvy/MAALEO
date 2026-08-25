@@ -46,7 +46,9 @@ export default function App() {
   };
 
   const wrongChain = chainId && chainId !== TARGET_CHAIN_ID;
-  const caShort = `${TOKEN.contractAddress.slice(0, 6)}…${TOKEN.contractAddress.slice(-4)}`;
+  const caShort = TOKEN.contractAddress
+    ? `${TOKEN.contractAddress.slice(0, 6)}…${TOKEN.contractAddress.slice(-4)}`
+    : null;
 
   return (
     <div className="app">
@@ -97,7 +99,11 @@ export default function App() {
           </div>
           <div className="hero-token">
             <span className="hero-token-pill"><span className="hero-token-dot" /> {TOKEN.symbol}</span>
-            <a className="hero-token-ca" href={TOKEN.launchpadUrl} target="_blank" rel="noopener noreferrer">{caShort} ↗</a>
+            {caShort ? (
+              <a className="hero-token-ca" href={TOKEN.launchpadUrl} target="_blank" rel="noopener noreferrer">{caShort} ↗</a>
+            ) : (
+              <a className="hero-token-ca" href={TOKEN.launchpadUrl} target="_blank" rel="noopener noreferrer">launch on ponsfamily ↗</a>
+            )}
           </div>
         </div>
 

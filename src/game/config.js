@@ -1,15 +1,16 @@
 // ─── PONSMINER · core config ───────────────────────────────────────────────
 // Everything tunable lives here. The game reads these constants only.
 
-// ─── TOKEN & TREASURY (the token you deploy later) ──────────────────────────
+// ─── PONSMINER TOKEN (yang di-hold — launch di ponsfamily) ─────────────────
+// Setelah launch di ponsfamily.com/launchpad/create, isi contractAddress di sini.
 export const TOKEN = {
-  symbol: 'PONS',
-  name: 'Pons',
+  symbol: 'PONSMINER',
+  name: 'PONSMINER',
   decimals: 18,
   supply: 1_000_000_000,        // 1B, fixed-supply launchpad pattern
-  contractAddress: '0x39dBED3a2bd333467115dE45665cC57F813C4571', // live on Robinhood Chain ✓
+  contractAddress: null,         // ← isi CA setelah launch di ponsfamily
   // Where the CA link points. Kosongkan → otomatis ke explorer.
-  launchpadUrl: 'https://www.ponsfamily.com/launchpad/0x39dBED3a2bd333467115dE45665cC57F813C4571',
+  launchpadUrl: 'https://www.ponsfamily.com/launchpad/create',
   // Determined emission: the whole pool pays this per hour, split by GPU count.
   poolPerHour: 200,             // 200 PONS/hour divided among ALL GPU owners
 };
@@ -26,7 +27,7 @@ export const PAY_TOKEN = {
 export const TREASURY = '0x0000000000000000000000000000000000000000'; // ← fill with treasury address
 
 // ─── STOCK TICKERS (dividend pool — tokenized stock on RH) ────────────────
-// Dashboard ticker tape. Live prices via Chainlink once P1 reads are wired.
+// Dashboard ticker tape + dividend reward tokens. Live prices via Chainlink.
 export const STOCK_TICKERS = [
   { symbol: 'NVDA',  token: '0xd0601ce157db5bdc3162bbac2a2c8af5320d9eec' },
   { symbol: 'COIN',  token: '0x6330d8c3178a418788df01a47479c0ce7ccf450b' },
@@ -36,11 +37,15 @@ export const STOCK_TICKERS = [
   { symbol: 'SPCX',  token: '0x4a0e65a3eccec6dbe60ae065f2e7bb85fae35eea' },
 ];
 
-// Dividend pool (P1). Fill poolContract after RewardDistributor deploys.
+// ─── DIVIDEND POOL (P1 — RewardDistributor) ────────────────────────────────
+// Hold PONSMINER → pool pays PONS + stock pro-rata.
 export const DIVIDEND_STATUS = {
-  poolContract: null,        // ← fill with RewardDistributor address after deploy
-  poolPons: 0,               // PONS in pool (read live from contract once deployed)
-  poolStocks: [],            // [{symbol, amount}] stock in pool
+  poolContract: null,          // ← fill with RewardDistributor address after deploy
+  stakedToken: 'PONSMINER',    // token yang di-hold (launch di ponsfamily)
+  rewardTokens: [
+    { symbol: 'PONS', token: '0x39dBED3a2bd333467115dE45665cC57F813C4571' },
+    { symbol: 'NVDA', token: '0xd0601ce157db5bdc3162bbac2a2c8af5320d9eec' },
+  ],
 };
 export const TARGET_CHAIN_ID = 4663;         // Robinhood Chain
 export const NETWORK_NAME = 'Robinhood Chain';
