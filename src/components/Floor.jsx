@@ -1,14 +1,15 @@
-// ─── PONSMINER · Floor — the mine floor where rigs dig ─────────────────────
+// ─── PONSMINER · Floor — GPU mining rigs on the floor (animated) ───────────
 import { useEffect, useRef, useState } from 'react';
-import { drawMachine } from '../game/sprite.js';
-import { SHIFTS } from '../game/config.js';
+import { drawGPU } from '../game/sprite.js';
+import { perGpuPerHour } from '../game/state.js';
 
-export default function Floor({ state, selectedId, onSelect, floorBusy }) {
+export default function Floor({ state, selectedId, onSelect }) {
   const canvasRef = useRef(null);
   const [hoverId, setHoverId] = useState(null);
   const animRef = useRef(null);
+  const rate = perGpuPerHour(state);
 
-  // main render loop
+  // main render loop (always animating — fans spin)
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
@@ -19,88 +20,88 @@ export default function Floor({ state, selectedId, onSelect, floorBusy }) {
       const t = (performance.now() - start) / 1000;
       ctx.clearRect(0, 0, W, H);
 
-      // ── background: dark rock + ore glow ──
+      // ── background: dark mine with racks ──
       const bg = ctx.createLinearGradient(0, 0, 0, H);
       bg.addColorStop(0, '#0a0c10');
-      bg.addColorStop(1, '#141008');
+      bg.addColorStop(1, '#120f08');
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, W, H);
 
-      // ore veins (static, subtle)
-      ctx.strokeStyle = 'rgba(255,170,60,0.18)';
-      ctx.lineWidth = 2;
-      for (let v = 0; v < 8; v++) {
+      // vertical rack beams
+      ctx.strokeStyle = 'rgba(43,48,64,0.5)';
+      ctx.lineWidth = 4;
+      for (let i = 1; i < 8; i++) {
         ctx.beginPath();
-        let vx = ((v * 211) % W), vy = 30 + ((v * 97) % (H - 60));
-        ctx.moveTo(vx, vy);
-        for (let i = 0; i < 6; i++) {
-          vx += 22 + ((v * 13 + i * 7) % 30);
-          vy += ((v + i) % 2 ? 18 : -14);
-          ctx.lineTo(vx, vy);
-        }
+        ctx.moveTo((W / 8) * i, 0);
+        ctx.lineTo((W / 8) * i, H);
         ctx.stroke();
       }
 
       // floor line
-      ctx.strokeStyle = 'rgba(255,190,80,0.25)';
+      ctx.strokeStyle = 'rgba(255,190,80,0.2)';
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(0, H * 0.72);
-      ctx.lineTo(W, H * 0.72);
+      ctx.moveTo(0, H * 0.7);
+      ctx.lineTo(W, H * 0.7);
       ctx.stroke();
 
-      // floor busy indicator
-      const busyPct = Math.round((floorBusy || 0.5) * 100);
+      // pool status
       ctx.fillStyle = '#8b95a5';
       ctx.font = "11px 'JetBrains Mono', monospace";
       ctx.textAlign = 'left';
       ctx.textBaseline = 'top';
-      ctx.fillText(`FLOOR BUSY · ${busyPct}%`, 14, H - 26);
+      ctx.fillText(`POOL · ${state.totalGpuCount} GPU · ${rate.toFixed(2)} P/h each`, 14, H - 26);
+      ctx.fillStyle = 'rgba(139,149,165,0.5)';
+      ctx.fillText('SHARED RATE — MORE BUYERS, MORE SPLIT', 14, H - 12);
 
-      // ── machines ──
-      const spacing = W / (state.bays + 1);
-      state.machines.forEach((m, i) => {
+      // ── GPUs ──
+      const spacing = W / (Math.max(state.gpus.length, 1) + 1);
+      state.gpus.forEach((g, i) => {
         const x = spacing * (i + 1);
-        const y = H * 0.62;
-        const sel = m.id === selectedId || m.id === hoverId;
-        const digging = m.shiftBought.size > 0;
-        drawMachine(ctx, m, x, y, 1.15, t, { selected: sel, digging });
+        const y = H * 0.58;
+        const sel = g.id === selectedId || g.id === hoverId;
+        drawGPU(ctx, g, x, y, 1.0, t, {
+          selected: sel,
+          mining: true,
+          hashRate: rate,
+        });
       });
 
-      // empty bay slot hint
-      if (state.machines.length < state.bays) {
-        const x = spacing * (state.machines.length + 1);
-        ctx.setLineDash([4, 4]);
-        ctx.strokeStyle = 'rgba(139,149,165,0.4)';
+      // empty slot hint
+      if (state.gpus.length === 0) {
+        ctx.setLineDash([5, 5]);
+        ctx.strokeStyle = 'rgba(255,210,87,0.5)';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.rect(x - 52, H * 0.62 - 32, 104, 58);
+        ctx.rect(W / 2 - 90, H * 0.58 - 50, 180, 84);
         ctx.stroke();
         ctx.setLineDash([]);
-        ctx.fillStyle = 'rgba(139,149,165,0.6)';
-        ctx.font = "11px 'JetBrains Mono', monospace";
+        ctx.fillStyle = 'rgba(255,210,87,0.8)';
+        ctx.font = "bold 13px 'JetBrains Mono', monospace";
         ctx.textAlign = 'center';
-        ctx.fillText('EMPTY BAY', x, H * 0.62 + 44);
+        ctx.fillText('NO GPU YET', W / 2, H * 0.58 + 52);
+        ctx.fillStyle = 'rgba(255,210,87,0.5)';
+        ctx.font = "10px 'JetBrains Mono', monospace";
+        ctx.fillText('connect wallet → buy a GPU', W / 2, H * 0.58 + 68);
       }
 
       animRef.current = requestAnimationFrame(draw);
     };
     draw();
     return () => cancelAnimationFrame(animRef.current);
-  }, [state.machines, state.bays, selectedId, hoverId, floorBusy]);
+  }, [state.gpus, state.totalGpuCount, selectedId, hoverId, rate]);
 
-  // click → nearest machine
+  // click → nearest GPU
   function handleClick(e) {
     const rect = e.currentTarget.getBoundingClientRect();
     const px = e.clientX - rect.left;
     const scale = rect.width / canvasRef.current.width;
     const canvasX = px / scale;
-    const spacing = canvasRef.current.width / (state.bays + 1);
+    const spacing = canvasRef.current.width / (Math.max(state.gpus.length, 1) + 1);
     let best = null, bestDist = 90;
-    state.machines.forEach((m, i) => {
-      const mx = spacing * (i + 1);
-      const d = Math.abs(canvasX - mx);
-      if (d < bestDist) { bestDist = d; best = m.id; }
+    state.gpus.forEach((g, i) => {
+      const d = Math.abs(canvasX - spacing * (i + 1));
+      if (d < bestDist) { bestDist = d; best = g.id; }
     });
     if (best) onSelect(best);
   }
@@ -118,11 +119,11 @@ export default function Floor({ state, selectedId, onSelect, floorBusy }) {
           const px = e.clientX - rect.left;
           const scale = rect.width / canvasRef.current.width;
           const canvasX = px / scale;
-          const spacing = canvasRef.current.width / (state.bays + 1);
+          const spacing = canvasRef.current.width / (Math.max(state.gpus.length, 1) + 1);
           let best = null, bestDist = 90;
-          state.machines.forEach((m, i) => {
+          state.gpus.forEach((g, i) => {
             const d = Math.abs(canvasX - spacing * (i + 1));
-            if (d < bestDist) { bestDist = d; best = m.id; }
+            if (d < bestDist) { bestDist = d; best = g.id; }
           });
           setHoverId(best);
         }}

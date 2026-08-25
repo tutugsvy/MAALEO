@@ -1,6 +1,7 @@
-// ─── PONSMINER · Top HUD — PONS, shifts, emission clock ────────────────────
+// ─── PONSMINER · Top HUD — PAY, PONS, wallet connect, pool rate ────────────
 import { useEffect, useState } from 'react';
-import { SHIFTS, TOKEN } from '../game/config.js';
+import { TOKEN, PAY_TOKEN, TREASURY } from '../game/config.js';
+import { perGpuPerHour } from '../game/state.js';
 
 export default function HUD({ state, onAction }) {
   const [now, setNow] = useState(Date.now());
@@ -9,53 +10,47 @@ export default function HUD({ state, onAction }) {
     return () => clearInterval(iv);
   }, []);
 
-  const hour = new Date(now).getUTCHours();
-  const currentShift = SHIFTS.find(s => hour >= s.utcStart && hour < s.utcEnd) || SHIFTS[3];
-  const nextShift = SHIFTS[(SHIFTS.indexOf(currentShift) + 1) % SHIFTS.length];
-  const nextStart = nextShift.utcStart;
-  const hoursUntil = nextStart >= hour ? nextStart - hour : 24 - hour + nextStart;
-
-  // countdown to next settle (2-min cycle)
-  const settleCycle = 120;
-  const secsInCycle = Math.floor((now / 1000) % settleCycle);
-  const countdown = settleCycle - secsInCycle;
+  const rate = perGpuPerHour(state);
+  const gpuCount = state.totalGpuCount || state.gpus.length;
 
   return (
     <header className="hud">
       <div className="hud-brand">
-        <img src="/assets/logo.svg" alt="PONSMINER" className="hud-logo" />
+        <img src="/assets/logo-user.jpg" alt="PONSMINER" className="hud-logo" />
         <div>
           <div className="hud-title">PONSMINER</div>
-          <div className="hud-tag">mining game · robinhood chain</div>
+          <div className="hud-tag">gpu mining · robinhood chain</div>
         </div>
       </div>
 
       <div className="hud-stats">
-        <StatBox label="PONS" value={Math.floor(state.fuel).toLocaleString()} accent="#ffd257" />
-        <StatBox label="MINED" value={state.pons.toFixed(2)} accent="#7ee787" />
-        <StatBox label="BAYS" value={`${state.machines.length}/${state.bays}`} />
-        <StatBox label="SHIFT" value={currentShift.short} sub={`next in ${hoursUntil}h`} accent="#8fd3ff" />
-      </div>
-
-      <div className="hud-market">
-        <div className="mkt-tick">
-          <span className="mkt-sym">EMISSION</span>
-          <span className="mkt-price">{TOKEN.emissionPerSettle} PONS</span>
-          <span className="mkt-up">per settle · fixed</span>
-        </div>
-        <div className="mkt-tick">
-          <span className="mkt-sym">NEXT SETTLE</span>
-          <span className="mkt-price">{countdown}s</span>
-          <span className="mkt-up">every 2 min</span>
-        </div>
+        <StatBox label={PAY_TOKEN.symbol + ' BALANCE'} value={Math.floor(state.pay).toLocaleString()} accent="#ffd257" />
+        <StatBox label="PONS MINED" value={state.pons.toFixed(4)} accent="#7ee787" />
+        <StatBox label="MY GPU" value={state.gpus.length} />
+        <StatBox label="FLOOR GPU" value={gpuCount} />
+        <StatBox label="RATE / GPU" value={rate.toFixed(2) + ' P/h'} sub={`pool ${TOKEN.poolPerHour} P/h ÷ ${gpuCount}`} accent="#8fd3ff" />
       </div>
 
       <div className="hud-actions">
-        <button className="btn btn-gold" onClick={() => onAction('open-shop')}>SHOP</button>
+        {state.wallet ? (
+          <button className="btn btn-gold" title="Connected wallet" onClick={() => onAction('disconnect')}>
+            <span className="wallet-dot" /> {shortAddr(state.wallet)}
+          </button>
+        ) : (
+          <button className="btn btn-gold" onClick={() => onAction('connect')}>
+            ⚡ CONNECT WALLET
+          </button>
+        )}
+        <button className="btn btn-ghost" onClick={() => onAction('open-shop')}>BUY GPU</button>
         <button className="btn btn-ghost" onClick={() => onAction('open-rules')}>?</button>
       </div>
     </header>
   );
+}
+
+function shortAddr(a) {
+  if (!a) return '';
+  return a.slice(0, 6) + '…' + a.slice(-4);
 }
 
 function StatBox({ label, value, sub, accent }) {
