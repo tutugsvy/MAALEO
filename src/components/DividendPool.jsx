@@ -1,20 +1,15 @@
-// ─── PONSMINER v2 · Dividend pool — multi-reward ───────────────────────────
-// Hold PONSMINER → pool pays PONS + tokenized stock (NVDA, COIN, MSFT…) pro-rata.
-// Reads real on-chain state: your share, pool balance per reward token, pending.
+// ─── PONSMINER · Fee sharing — ponsfamily native distributor ───────────────
+// The launchpad distributes 100% of creator fees to holders, pro-rata,
+// straight to their wallets. No claim needed. This panel shows your real
+// share (balance ÷ supply) and the mechanics. Read-only, honest.
 import { useEffect, useState } from 'react';
-import { TOKEN, DIVIDEND_STATUS, EXPLORER_URL } from '../game/config.js';
-import { tokenBalance, tokenTotalSupply, pendingReward, poolBalance, fmtBig, sendClaim } from '../game/rpc.js';
+import { TOKEN, FEE_SHARE, NETWORK_NAME } from '../game/config.js';
+import { tokenBalance, tokenTotalSupply, fmtBig } from '../game/rpc.js';
 
-const POOL = DIVIDEND_STATUS.poolContract;
-const STAKED = TOKEN.contractAddress; // PONSMINER CA (sama dengan stakedToken di contract)
-const REWARDS = DIVIDEND_STATUS.rewardTokens;
+const STAKED = TOKEN.contractAddress; // PONSMINER CA
 
-export default function DividendPool({ account, provider }) {
-  const [share, setShare] = useState(null);          // {balance, supply, pct}
-  const [pools, setPools] = useState(null);           // [{symbol, amount}]
-  const [pending, setPending] = useState(null);       // [{symbol, amount}]
-  const [busy, setBusy] = useState(false);
-  const [txHash, setTxHash] = useState(null);
+export default function DividendPool({ account }) {
+  const [share, setShare] = useState(null); // {balance, supply, pct}
 
   const short = a => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : null);
 
@@ -36,82 +31,29 @@ export default function DividendPool({ account, provider }) {
     return () => { alive = false; };
   }, [account]);
 
-  // live pool balances per reward token
-  useEffect(() => {
-    let alive = true;
-    if (!POOL) { setPools(null); return; }
-    (async () => {
-      try {
-        const results = await Promise.all(
-          REWARDS.map(r => poolBalance(POOL, r.token)
-            .then(v => ({ symbol: r.symbol, amount: v }))
-            .catch(() => ({ symbol: r.symbol, amount: 0n })))
-        );
-        if (alive) setPools(results);
-      } catch { setPools(null); }
-    })();
-    return () => { alive = false; };
-  }, [account]);
-
-  // live pending per reward token
-  useEffect(() => {
-    let alive = true;
-    if (!POOL || !account) { setPending(null); return; }
-    (async () => {
-      try {
-        const results = await Promise.all(
-          REWARDS.map(r => pendingReward(POOL, account, r.token)
-            .then(v => ({ symbol: r.symbol, amount: v }))
-            .catch(() => ({ symbol: r.symbol, amount: 0n })))
-        );
-        if (alive) setPending(results);
-      } catch { setPending(null); }
-    })();
-    return () => { alive = false; };
-  }, [account]);
-
-  const handleClaim = async () => {
-    if (!POOL || !provider) { setTxHash('Claim unavailable — pool contract not deployed yet.'); return; }
-    setBusy(true); setTxHash(null);
-    try {
-      const tx = await sendClaim(provider, POOL);
-      setTxHash(`${EXPLORER_URL}/tx/${tx}`);
-    } catch (e) {
-      setTxHash((e && e.message) || 'Claim failed');
-    } finally {
-      setBusy(false);
-    }
-  };
-
   const pctText = share ? share.pct.toFixed(4) + '%' : (account ? '—' : '0.00%');
   const balanceText = share ? fmtBig(share.balance) : (account ? '—' : '0.0000');
 
   return (
     <section className="pool" id="pool">
       <div className="pool-head">
-        <h2 className="pool-title"><span className="pool-mark">◆</span> THE POOL</h2>
+        <h2 className="pool-title"><span className="pool-mark">◆</span> FEE SHARING</h2>
         <span className="pool-status live">● LIVE</span>
       </div>
 
       <div className="pool-grid">
-        {REWARDS.map(r => (
-          <div className="pool-card pool-card--reward" key={r.symbol}>
-            <span className="pool-label">{r.symbol} IN POOL</span>
-            <span className="pool-value">
-              {pools ? pools.find(p => p.symbol === r.symbol)?.amount !== undefined
-                ? fmtBig(pools.find(p => p.symbol === r.symbol).amount, 18, 4 + (r.symbol === 'PONS' ? 0 : 4))
-                : '—'
-               : '0.0000'}
-            </span>
-            <span className="pool-note">
-              {pending
-                ? pending.find(p => p.symbol === r.symbol)?.amount > 0n
-                  ? `you have ${fmtBig(pending.find(p => p.symbol === r.symbol).amount)} pending`
-                  : 'no pending rewards'
-                : account ? '—' : 'connect wallet'}
-            </span>
-          </div>
-        ))}
+        <div className="pool-card pool-card--pons">
+          <span className="pool-label">CREATOR FEE → HOLDERS</span>
+          <span className="pool-value">{FEE_SHARE.creatorCut}</span>
+          <span className="pool-note">of every creator fee is distributed pro-rata</span>
+        </div>
+        <div className="pool-card pool-card--stock">
+          <span className="pool-label">REWARD TOKENS</span>
+          <span className="pool-value" style={{ fontSize: 'clamp(20px, 3vw, 30px)' }}>
+            {FEE_SHARE.rewards}
+          </span>
+          <span className="pool-note">paid from both sides of every swap</span>
+        </div>
         <div className="pool-card pool-card--share">
           <span className="pool-label">YOUR SHARE</span>
           <span className="pool-value">{pctText}</span>
@@ -124,19 +66,15 @@ export default function DividendPool({ account, provider }) {
       </div>
 
       <div className="pool-cta">
-        <button className="pool-claim" disabled={busy} onClick={handleClaim}>
-          {busy ? 'CLAIMING…' : 'CLAIM DIVIDENDS'}
-        </button>
-        <p className="pool-hint">
-          Your share = your PONSMINER balance ÷ total supply × pool. Claimed as PONS + tokenized stock.
+        <p className="pool-hint" style={{ maxWidth: 'none' }}>
+          Your share = your PONSMINER balance ÷ total supply. Fees are pushed to your wallet
+          automatically by the launchpad — <b>no claim needed</b>, {FEE_SHARE.distribution}, {FEE_SHARE.permanence}.
         </p>
-        {txHash && (
-          <p className={`pool-result ${txHash.startsWith('http') ? 'ok' : 'err'}`}>
-            {txHash.startsWith('http')
-              ? <a href={txHash} target="_blank" rel="noopener noreferrer">View transaction ↗</a>
-              : txHash}
-          </p>
-        )}
+        <p className="pool-hint" style={{ maxWidth: 'none' }}>
+          <b>Mechanics:</b> every buy/sell on ponsfamily pays a fee. The creator portion
+          ({FEE_SHARE.creatorCut} of it) flows to holders on {NETWORK_NAME} as {FEE_SHARE.rewards},
+          split by balance ÷ supply.
+        </p>
       </div>
     </section>
   );

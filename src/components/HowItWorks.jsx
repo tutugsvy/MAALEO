@@ -1,21 +1,21 @@
-// ─── PONSMINER v2 · How it works — hold-to-earn, honest copy ───────────────
-import { TOKEN } from '../game/config.js';
+// ─── PONSMINER · How it works — fee sharing, honest copy ───────────────────
+import { TOKEN, FEE_SHARE } from '../game/config.js';
 
 const STEPS = [
   {
     n: '01',
     t: 'HOLD',
-    d: `Buy & hold ${TOKEN.symbol}. Your share of the pool is your balance ÷ total supply — nothing to stake, nothing to lock.`,
+    d: `Buy & hold ${TOKEN.symbol}. Your share of the fees is your balance ÷ total supply — nothing to stake, nothing to lock.`,
   },
   {
     n: '02',
-    t: 'POOL FILLS',
-    d: 'Every swap of the token pays a fee. Most of it funds the dividend pool — from traders, not from the next holder in.',
+    t: 'TRADES PAY FEES',
+    d: 'Every buy/sell of the token pays a fee. The creator portion is earmarked for holders — from traders, not from the next holder in.',
   },
   {
     n: '03',
-    t: 'CLAIM',
-    d: `Claim any time: PONS + tokenized stock (NVDA, COIN, MSFT…), pro-rata. No bots, no lockups — just your balance.`,
+    t: 'EARN AUTOMATICALLY',
+    d: `${FEE_SHARE.creatorCut} of creator fees are pushed to your wallet as ${FEE_SHARE.rewards}, pro-rata. No claim, no keeper — permanent by launchpad.`,
   },
 ];
 

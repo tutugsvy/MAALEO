@@ -1,6 +1,6 @@
-// ─── PONSMINER v2 · App — hold-to-earn dividend dashboard ──────────────────
-// Hold PONS → pool (trading fee + treasury) → claim PONS + stock.
-// Real wallet connect (EIP-1193) + real on-chain reads (balance, supply).
+// ─── PONSMINER v2 · App — hold-to-earn fee-sharing dashboard ───────────────
+// Hold PONSMINER → ponsfamily launchpad shares 100% creator fees to holders,
+// pro-rata, automatically. Real wallet connect + real on-chain share read.
 import { useEffect, useState } from 'react';
 import './dashboard.css';
 import logoUrl from './assets/logo-v2.jpg';
@@ -88,11 +88,11 @@ export default function App() {
             <span className="hero-accent">EARN</span>
           </h1>
           <p className="hero-sub">
-            Hold {TOKEN.symbol} and the pool pays you — <b>PONS + tokenized stock</b>.
-            Every swap funds it. Your balance decides your share.
+            Hold {TOKEN.symbol} and every trade pays you — <b>100% of creator fees
+            shared to holders</b>, pro-rata, automatically. No claim needed.
           </p>
           <div className="hero-cta">
-            <a className="hero-btn primary" href="#pool">VIEW THE POOL</a>
+            <a className="hero-btn primary" href="#pool">VIEW FEE SHARING</a>
             <a className="hero-btn" href={TOKEN.launchpadUrl} target="_blank" rel="noopener noreferrer">
               TRADE {TOKEN.symbol} ↗
             </a>
@@ -110,7 +110,7 @@ export default function App() {
         <div className="hero-visual">
           <PoolVisual />
           <div className="hero-viz-label">
-            <span className="hero-viz-dot" /> FEES IN · REWARDS OUT
+            <span className="hero-viz-dot" /> SWAPS IN · HOLDERS EARN
           </div>
         </div>
       </main>

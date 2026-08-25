@@ -1,6 +1,6 @@
-// ─── PONSMINER · Dividend pool visual — tokens flowing into the pool ───────
-// Replace the old GPU rig: this is a hold-to-earn dividend pool, not a GPU
-// mining game. Concentric pool rings, PONSMINER flowing in, PONS + stock out.
+// ─── PONSMINER · Fee-share visual — swaps in, holders earn ─────────────────
+// Concentric rings: fees flow in from every swap, split pro-rata to holders.
+// No GPU, no claim — automatic by the launchpad distributor.
 export default function PoolVisual() {
   return (
     <div className="pv">
@@ -12,17 +12,17 @@ export default function PoolVisual() {
         <div className="pv-ring pv-ring--mid" />
         <div className="pv-ring pv-ring--in" />
         <div className="pv-core">
-          <span className="pv-core-t">POOL</span>
-          <span className="pv-core-s">PONS + STOCK</span>
+          <span className="pv-core-t">FEE SHARE</span>
+          <span className="pv-core-s">PONSMINER + WETH</span>
         </div>
       </div>
-      {/* inflows */}
-      <span className="pv-chip pv-chip--in1">PONSMINER ▲</span>
-      <span className="pv-chip pv-chip--in2">WETH ▲</span>
-      {/* outflows (rewards) */}
-      <span className="pv-chip pv-chip--out1">PONS ▼</span>
-      <span className="pv-chip pv-chip--out2">NVDA ▼</span>
-      <span className="pv-chip pv-chip--out3">COIN ▼</span>
+      {/* inflows: every swap pays fees */}
+      <span className="pv-chip pv-chip--in1">SWAPS ▲</span>
+      <span className="pv-chip pv-chip--in2">TRADERS ▲</span>
+      {/* outflows: fees pushed to holders */}
+      <span className="pv-chip pv-chip--out1">HOLDERS ▼</span>
+      <span className="pv-chip pv-chip--out2">PRO-RATA ▼</span>
+      <span className="pv-chip pv-chip--out3">AUTO ▼</span>
     </div>
   );
 }
